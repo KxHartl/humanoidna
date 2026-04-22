@@ -11,7 +11,7 @@ POSITIONS_FILE = os.path.join(SAVE_FOLDER, "robot_positions.txt")
 IMAGE_PREFIX = "image"
 IMAGE_FORMAT = ".png"
 
-ROBOT_HOST = "" ### UPISATI IP ADRESU
+ROBOT_HOST = "192.168.40.14"  # UR5e robot IP
 ROBOT_PORT = 30002
 
 # Function definition
