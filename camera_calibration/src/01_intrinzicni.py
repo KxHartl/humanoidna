@@ -17,20 +17,35 @@ color_stream = profile.get_stream(rs.stream.color)
 intr = color_stream.as_video_stream_profile().get_intrinsics()
 
 # Print the intrinsic parameters
-### DODAJTE ISPIS POTREBNIH INFORMACIJA
+print("=" * 60)
+print("KALIBRACIJA KAMERE - INTRINZIČNI PARAMETRI")
+print("=" * 60)
+print(f"\nRezolucija: {intr.width} x {intr.height} piksela")
+print(f"Žarišna duljina fx: {intr.fx} piksela")
+print(f"Žarišna duljina fy: {intr.fy} piksela")
+print(f"Optičko središte cx: {intr.ppx} piksela")
+print(f"Optičko središte cy: {intr.ppy} piksela")
+print(f"\nDistorzijski koeficijenti:")
+print(f"  k1: {intr.coeffs[0]}")
+print(f"  k2: {intr.coeffs[1]}")
+print(f"  p1: {intr.coeffs[2]}")
+print(f"  p2: {intr.coeffs[3]}")
+print(f"  k3: {intr.coeffs[4]}")
 
 # Create intrinsic matrix (camera matrix)
-### KONTRUIRAJTE INTRINZIČNU MATRICU
 mtx = np.array([
-    [, , ],
-    [, , ],
-    [, , ]
+    [intr.fx, 0, intr.ppx],
+    [0, intr.fy, intr.ppy],
+    [0, 0, 1]
 ], dtype=np.float64)
 # Create distortion coefficients array
 dist = np.array(intr.coeffs, dtype=np.float64)
 
 # Print the intrinsic matrix and distortion coefficients array
-### DODAJTE ISPIS POTREBNIH INFORMACIJA
+print(f"\nIntrinzična matrica K (3x3):")
+print(mtx)
+print(f"\nVektor distorzije:")
+print(dist)
 
 # Save intrinsic matrix and distortion coefficients
 np.save("camera_matrix.npy", mtx)
