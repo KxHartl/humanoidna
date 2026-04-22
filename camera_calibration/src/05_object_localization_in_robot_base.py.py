@@ -9,7 +9,7 @@ K = np.load("camera_matrix.npy")
 T_cam_from_tcp = np.load("T_cam_from_tcp.npy")   # TCP -> kamera
 
 # Define robot network connection settings
-ROBOT_HOST = "192.168.40.14"  # UR5e robot IP
+ROBOT_HOST = "192.168.40.171"  # UR5e robot IP
 ROBOT_PORT = 30002
 
 clicked_point = None

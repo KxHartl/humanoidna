@@ -46,7 +46,7 @@ print(f"\nIntrinzična matrica K (3x3):")
 print(mtx)
 print(f"\nVektor distorzije:")
 print(dist)
-
+    
 # Save intrinsic matrix and distortion coefficients
 np.save("camera_matrix.npy", mtx)
 np.save("dist_coeffs.npy", dist)
