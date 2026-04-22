@@ -5,8 +5,8 @@ import os
 from natsort import natsorted
 
 # Define file paths, board dimensions, and detection settings
-IMAGES_GLOB = "data/*.png"
-ROBOT_FILE = "data/robot_positions.txt"
+IMAGES_GLOB = "data/calibration_images/*.png"
+ROBOT_FILE = "data/calibration_images/robot_positions.txt"
 
 SQUARE_LENGTH = 0.029   # m
 MARKER_LENGTH = 0.015   # m
@@ -56,37 +56,39 @@ def invert_4x4(T):
     return T_inv
 
 # Detect ChArUco board and return target-to-camera transformation matrix
-def detect_target_to_camera(image_path, mtx, dist, board, aruco_dict, parameters):
+def detect_target_to_camera(image_path, mtx, dist, board, charuco_detector):
     img = cv2.imread(image_path)
     if img is None:
         return None
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    corners, ids, _ = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
-    if ids is None or len(ids) == 0:
+    # Detect ChArUco using new API
+    charuco_corners, charuco_ids, marker_corners, marker_ids = charuco_detector.detectBoard(gray)
+
+    if charuco_ids is None or len(charuco_ids) < MIN_CHARUCO_CORNERS:
         return None
 
-    retval, charuco_corners, charuco_ids = cv2.aruco.interpolateCornersCharuco(
-        corners, ids, gray, board
-    )
-
-    if (
-        retval is None
-        or retval < MIN_CHARUCO_CORNERS
-        or charuco_corners is None
-        or charuco_ids is None
-    ):
-        return None
-
-    success, rvec, tvec = cv2.aruco.estimatePoseCharucoBoard(
-        charuco_corners,
-        charuco_ids,
-        board,
+    # Use solvePnP for pose estimation
+    obj_points = []
+    img_points = []
+    
+    for i, charuco_id in enumerate(charuco_ids.flatten()):
+        obj_point = board.getChessboardCorners()[charuco_id]
+        img_point = charuco_corners[i].flatten()
+        obj_points.append(obj_point)
+        img_points.append(img_point)
+    
+    obj_points = np.array(obj_points, dtype=np.float32)
+    img_points = np.array(img_points, dtype=np.float32)
+    
+    success, rvec, tvec = cv2.solvePnP(
+        obj_points,
+        img_points,
         mtx,
         dist,
-        None,
-        None
+        useExtrinsicGuess=False,
+        flags=cv2.SOLVEPNP_EPNP
     )
 
     if not success:
@@ -110,7 +112,8 @@ dist = np.load("dist_coeffs.npy")
 
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 board = cv2.aruco.CharucoBoard((5, 7), SQUARE_LENGTH, MARKER_LENGTH, aruco_dict)
-parameters = cv2.aruco.DetectorParameters()
+charuco_params = cv2.aruco.CharucoParameters()
+charuco_detector = cv2.aruco.CharucoDetector(board, charuco_params)
 
 image_paths = natsorted(glob.glob(IMAGES_GLOB))
 robot_matrices = load_4x4_matrices(ROBOT_FILE)
@@ -137,7 +140,7 @@ for i, image_path in enumerate(image_paths):
 
     # Detect target (ChArUco board) pose in camera coordinate system
     T_target_cam = detect_target_to_camera(
-        image_path, mtx, dist, board, aruco_dict, parameters
+        image_path, mtx, dist, board, charuco_detector
     )
 
     if T_target_cam is None:

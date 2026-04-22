@@ -6,12 +6,12 @@ from ast import literal_eval
 import pyrealsense2 as rs
 
 # Settings
-SAVE_FOLDER = "data"
+SAVE_FOLDER = "data/calibration_images"
 POSITIONS_FILE = os.path.join(SAVE_FOLDER, "robot_positions.txt")
 IMAGE_PREFIX = "image"
 IMAGE_FORMAT = ".png"
 
-ROBOT_HOST = "192.168.40.14"  # UR5e robot IP
+ROBOT_HOST = "192.168.40.171"  # UR5e robot IP
 ROBOT_PORT = 30002
 
 # Function definition

@@ -11,13 +11,13 @@ dist = np.load("dist_coeffs.npy")
 # Define ChArUco board with real dimensions
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 board = cv2.aruco.CharucoBoard((5, 7), 0.029, 0.015, aruco_dict)
-parameters = cv2.aruco.DetectorParameters()
+charuco_params = cv2.aruco.CharucoParameters()
 
 # Minimum number of detected ChArUco corners for reliable pose estimation
 MIN_CHARUCO_CORNERS = 6
 
 # Load all images from dataset folder
-images = glob.glob("data/*.png")
+images = glob.glob("data/calibration_images/*.png")
 images = natsorted(images)
 print("Pronađene slike:")
 for p in images:
@@ -28,6 +28,9 @@ os.makedirs("data/results", exist_ok=True)
 
 # Open output file for saving pose results
 results_path = "data/results/koordinate.txt"
+
+# Create CharucoDetector
+charuco_detector = cv2.aruco.CharucoDetector(board, charuco_params)
 
 # Process all images: detect ChArUco board, estimate pose, and save results
 with open(results_path, "w", encoding="utf-8") as f:
@@ -42,54 +45,50 @@ with open(results_path, "w", encoding="utf-8") as f:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         display_img = img.copy()
 
-        # Detect ArUco markers
-        corners, ids, _ = cv2.aruco.detectMarkers(
-            gray, aruco_dict, parameters=parameters
-        )
+        # Detect ChArUco board using new API
+        charuco_corners, charuco_ids, marker_corners, marker_ids = charuco_detector.detectBoard(gray)
 
-        if ids is None or len(ids) == 0:
-            print(f"[INFO] No markers detected: {image_path}")
-            output_image_path = f"data/results/{os.path.basename(image_path)}"
-            cv2.imwrite(output_image_path, display_img)
-            continue
-
-        # Draw detected markers
-        cv2.aruco.drawDetectedMarkers(display_img, corners, ids)
-
-        # Interpolate ChArUco corners
-        retval, charuco_corners, charuco_ids = cv2.aruco.interpolateCornersCharuco(
-            corners, ids, gray, board
-        )
-
-        if (
-            retval is None
-            or retval < MIN_CHARUCO_CORNERS
-            or charuco_corners is None
-            or charuco_ids is None
-        ):
+        if charuco_ids is None or len(charuco_ids) < MIN_CHARUCO_CORNERS:
+            detected_count = 0 if charuco_ids is None else len(charuco_ids)
             print(
                 f"[WARNING] Not enough ChArUco corners: {image_path} "
-                f"(detected: {0 if retval is None else int(retval)})"
+                f"(detected: {detected_count})"
             )
-
             output_image_path = f"data/results/{os.path.basename(image_path)}"
             cv2.imwrite(output_image_path, display_img)
             continue
 
-        # Draw detected ChArUco corners
-        cv2.aruco.drawDetectedCornersCharuco(
-            display_img, charuco_corners, charuco_ids
-        )
+        # Draw detected markers if available
+        if marker_ids is not None:
+            cv2.aruco.drawDetectedMarkers(display_img, marker_corners, marker_ids)
 
-        # Estimate ChArUco board pose
-        success, rvec_charuco, tvec_charuco = cv2.aruco.estimatePoseCharucoBoard(
-            charuco_corners,
-            charuco_ids,
-            board,
+        # Draw detected ChArUco corners
+        if charuco_corners is not None and charuco_ids is not None:
+            cv2.aruco.drawDetectedCornersCharuco(
+                display_img, charuco_corners, charuco_ids
+            )
+
+        # Estimate ChArUco board pose using solvePnP
+        # Get 3D points from board
+        obj_points = []
+        img_points = []
+        
+        for i, charuco_id in enumerate(charuco_ids.flatten()):
+            obj_point = board.getChessboardCorners()[charuco_id]
+            img_point = charuco_corners[i].flatten()
+            obj_points.append(obj_point)
+            img_points.append(img_point)
+        
+        obj_points = np.array(obj_points, dtype=np.float32)
+        img_points = np.array(img_points, dtype=np.float32)
+        
+        success, rvec_charuco, tvec_charuco = cv2.solvePnP(
+            obj_points,
+            img_points,
             mtx,
             dist,
-            None,
-            None
+            useExtrinsicGuess=False,
+            flags=cv2.SOLVEPNP_EPNP
         )
 
         if not success:
