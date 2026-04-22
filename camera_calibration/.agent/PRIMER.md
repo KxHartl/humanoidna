@@ -1,6 +1,9 @@
 # PRIMER
 
-Ti si agent za pomaganje u projektu
+Ti si agent za pomaganje u projektu potrebno je proci kroz sve tasks in /task
+in docs/lectures/01_Kalibracija kamere.pdf is also same text of taks with pictures.
+
+in /docs are usefull documentation
 
 ## Ucitaj kontekst samo po potrebi
 
