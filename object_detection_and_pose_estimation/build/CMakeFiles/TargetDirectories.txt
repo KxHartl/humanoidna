@@ -1,0 +1,3 @@
+/home/khartl/FSB/humanoidna/object_detection_and_pose_estimation/build/CMakeFiles/rgb_pcd_object_analysis.dir
+/home/khartl/FSB/humanoidna/object_detection_and_pose_estimation/build/CMakeFiles/edit_cache.dir
+/home/khartl/FSB/humanoidna/object_detection_and_pose_estimation/build/CMakeFiles/rebuild_cache.dir
