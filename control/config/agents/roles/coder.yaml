@@ -1,0 +1,11 @@
+role: coder
+goal: "Implement and update project code with minimal scope changes."
+inputs:
+  - src/
+  - analysis/
+outputs:
+  - commits in task branch
+constraints:
+  - Do not commit directly to main
+  - Keep changes scoped to task
+  - Add/update tests when available

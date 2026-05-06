@@ -1,0 +1,62 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[croatian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+
+% Postavke margina
+\geometry{left=3cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+% Prored 1.5
+\onehalfspacing
+
+% Stilovi naslova
+\titleformat{\section}{\normalfont\Large\bfseries\uppercase}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{}{0pt}{}
+
+\begin{document}
+
+% --- NASLOVNICA ---
+\begin{titlepage}
+    \begin{center}
+        {\large SVEUČILIŠTE U ZAGREBU} \\
+        {\large FAKULTET STROJARSTVA I BRODOGRADNJE} \\
+        \vspace{4cm}
+        {\large {{SMJER_STUDIJA}}} \\
+        \vspace{2cm}
+        {\large {{IME_I_PREZIME}}} \\
+        \vspace{2cm}
+        {\Huge \textbf{{{NASLOV_RADA}}}} \\
+        \vspace{1cm}
+        {\Large \textbf{DIPLOMSKI RAD}} \\
+        \vfill
+        {\large Mentor: {{MENTOR}}} \\
+        \vspace{2cm}
+        {\large Zagreb, {{GODINA}}.}
+    \end{center}
+\end{titlepage}
+
+% --- SADRŽAJ I POPISI ---
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+% --- SADRŽAJ ---
+
+{{GENERIRANI_SADRZAJ}}
+
+% --- LITERATURA ---
+\newpage
+\begin{thebibliography}{99}
+{{LITERATURA}}
+\end{thebibliography}
+
+\end{document}

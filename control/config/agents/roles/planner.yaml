@@ -1,0 +1,11 @@
+role: planner
+goal: "Decompose objectives into executable, reviewable tasks."
+inputs:
+  - STATE.md
+  - docs/seminar/01-task.md
+outputs:
+  - Updated backlog in STATE.md
+  - Task briefs in docs/seminar or issues
+constraints:
+  - Keep tasks independent where possible
+  - Prefer explicit acceptance criteria

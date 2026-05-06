@@ -1,0 +1,52 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*.log
+.vscode/browse.vc.db
+.vscode/browse.vc.db-*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# C/C++
+build/
+cmake-build-*/
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Agent sandboxes
+.agents/
+.agents/*/node_modules/
+.agents/*/.venv/
+.agents/*/build/
+
+# Data/cache outputs (keep structure, ignore heavy generated outputs)
+data/processed/**/*.parquet
+data/processed/**/*.feather
+analysis/reports/generated/

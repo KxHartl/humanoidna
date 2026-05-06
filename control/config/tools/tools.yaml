@@ -1,0 +1,21 @@
+tools:
+  vcs:
+    git_required: ">=2.30"
+    recommended:
+      - gh
+  ai_clis:
+    copilot_cli:
+      command: "copilot"
+      required: false
+    codex_cli:
+      command: "codex"
+      required: false
+    claude_code:
+      command: "claude"
+      required: false
+    gemini_cli:
+      command: "gemini"
+      required: false
+  optional_runtime:
+    docker: true
+    podman: true

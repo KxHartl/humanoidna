@@ -1,0 +1,197 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[croatian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+
+% Postavke margina
+\geometry{left=3cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+% Prored 1.5
+\onehalfspacing
+
+% Stilovi naslova
+\titleformat{\section}{\normalfont\Large\bfseries\uppercase}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{}{0pt}{}
+
+\begin{document}
+
+% --- NASLOVNICA ---
+\begin{titlepage}
+    \begin{center}
+        {\large SVEUČILIŠTE U ZAGREBU} \\
+        {\large FAKULTET STROJARSTVA I BRODOGRADNJE} \\
+        \vspace{6cm}
+        {\large KOLEGIJ: Humanoidna robotika} \\
+        \vspace{2cm}
+        {\Huge \textbf{SEMINAR}} \\
+        \vspace{1cm}
+        {\Large \textbf{Detekcija voća i procjena poze primjenom dubokog učenja i 3D vizije}} \\
+        \vfill
+        {\large Krešimir Hartl} \\
+        \vspace{2cm}
+        {\large Zagreb, 2026.}
+    \end{center}
+\end{titlepage}
+
+% --- SADRŽAJ I POPISI ---
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+% --- SADRŽAJ (Ovdje AI ubacuje tekst) ---
+
+\section{UVOD}
+U ovom seminaru obrađuje se implementacija sustava za detekciju i procjenu 3D poze objekata (voća) u prostoru, što je ključan korak u razvoju sustava za robotsku manipulaciju i vizualnu percepciju humanoidnih robota. Rad se temelji na izradi vlastitog skupa podataka, obučavanju modela dubokog učenja za segmentaciju instanci te obradi trodimenzionalnih oblaka točaka (engl. point cloud) dobivenih pomoću RGB-D senzora. Cilj je bio osposobiti sustav za prepoznavanje različitih vrsta voća te točno određivanje njihovog težišta (centroida) u složenim scenama s višestrukim objektima. Uspješno rješavanje ovog problema omogućuje robotu interakciju s okolinom, kao što je prepoznavanje i hvatanje željenog objekta iz posude.
+
+\section{PRIKUPLJANJE I PRIPREMA SKUPA PODATAKA}
+
+\subsection{Postupak prikupljanja slika}
+Prvi korak u razvoju algoritma dubokog učenja bila je izrada prilagođenog skupa podataka koji reprezentira stvarne uvjete u okolini robota. Korišteno je 6 klasa voća (npr. crvena jabuka, zelena jabuka, limun, banana, avokado, orah, kruška - u obliku 3D printanih modela). Za svaku klasu prikupljeno je između 100 i 120 fotografija pojedinačnih plodova, pri čemu se vodilo računa o varijaciji kuta snimanja, mjerila, osvjetljenja te pojavi djelomičnih okluzija.
+
+Nadalje, snimljeno je i 80 do 120 slika složenih scena u kojima se više komada različitog voća nalazi u posudama ili na stolu. Na ovim slikama voće se preklapa, čime se simuliraju stvarni uvjeti s kojima se robot susreće pri zadatku sortiranja ili odabira.
+
+\subsection{Označavanje i integracija podataka}
+Nakon prikupljanja slika, izvedeno je označavanje (anotacija) na razini piksela, odnosno primijenjena je metoda segmentacije instanci (engl. instance segmentation). Prije početka označavanja, kreirana je zajednička \texttt{.csv} datoteka kojom je standardizirano nazivlje klasa. Svi sudionici u projektu su nezavisno označavali svoj podskup slika, bez primjene prethodne augmentacije. 
+
+Nakon završene anotacije, svi su pojedinačni skupovi podataka integrirani u jedan centralni skup unutar platforme Roboflow. Tek je na spojenom i usklađenom skupu podataka izvedena augmentacija slika, čime je dodatno povećana robusnost konačnog dataseta namijenjenog treniranju konvolucijskih neuronskih mreža.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{slike/dataset_jabuka.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/dataset_kutija.png}
+    \caption{Primjer prikupljenih slika: izdvojeni plod (lijevo) i složena scena s preklapanjem voća u kutiji (desno).}
+    \label{fig:okluzije}
+\end{figure}
+
+\begin{table}[h!]
+    \centering
+    \caption{Parametri prikupljenog skupa podataka}
+    \vspace{0.3cm}
+    \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Parametar} & \textbf{Vrijednost} \\
+    \hline
+    Broj klasa voća & 6 \\
+    Slika po klasi (pojedinačne) & 100 - 120 \\
+    Slika složenih scena & 80 - 120 \\
+    Tip anotacije & Segmentacija instanci \\
+    \hline
+    \end{tabular}
+    \label{tab:parametri}
+\end{table}
+
+\section{TRENING MODELA I DETEKCIJA}
+Za zadatak detekcije i segmentacije voća korišten je model iz YOLO arhitekture (YOLO varijanta prilagođena za segmentaciju). Spojeni i augmentirani skup podataka s Roboflow platforme preuzet je i korišten za treniranje. Model je evaluiran i optimiziran kako bi s visokom pouzdanošću detektirao maske pojedinačnih plodova voća, čak i kada su oni djelomično prekriveni drugim objektima. Dobiveni model predstavlja osnovu za daljnje mapiranje slikovnih informacija u trodimenzionalni prostor.
+
+\subsection{Rezultati na validacijskom skupu}
+
+Kako bi se detaljno prikazala kvaliteta naučenog modela, u nastavku su izložene sve metrike i vizualizacije dobivene na validacijskom skupu.
+
+\textbf{Usporedba stvarnih i predviđenih maski:}
+Na slikama ispod prikazani su odabrani primjeri iz validacijskog skupa. Lijevo su prikazane stvarne (ručno označene) maske, dok su desno prikazane predikcije modela na tim istim slikama.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{slike/val_batch0_labels.jpg}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/val_batch0_pred.jpg}
+    \caption{Validacijski Batch 0: Stvarne oznake (lijevo) i predikcije modela (desno).}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{slike/val_batch1_labels.jpg}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/val_batch1_pred.jpg}
+    \caption{Validacijski Batch 1: Stvarne oznake (lijevo) i predikcije modela (desno).}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{slike/val_batch2_labels.jpg}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/val_batch2_pred.jpg}
+    \caption{Validacijski Batch 2: Stvarne oznake (lijevo) i predikcije modela (desno).}
+\end{figure}
+
+\textbf{Matrice zabune (Confusion Matrix):}
+Matrica zabune daje uvid u točnost klasifikacije pojedinih klasa. S obzirom na to da su izračunate apsolutna i normalizirana matrica, iz njih je vidljivo u kojoj mjeri model miješa klase voća međusobno, kao i s pozadinom.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{slike/confusion_matrix.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/confusion_matrix_normalized.png}
+    \caption{Matrica zabune u apsolutnim (lijevo) i normaliziranim (desno) vrijednostima.}
+\end{figure}
+
+\textbf{Metrike graničnih kutija (Bounding Box):}
+Sljedeće krivulje opisuju performanse detekcije objekata pomoću graničnih kutija. Prikazane su krivulje Preciznosti (P), Odziva (R), F1 mjere te odnosa Preciznosti i Odziva (PR krivulja).
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{slike/BoxP_curve.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/BoxR_curve.png}
+    
+    \vspace{0.5cm}
+    \includegraphics[width=0.45\textwidth]{slike/BoxF1_curve.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/BoxPR_curve.png}
+    \caption{Box metrike: Preciznost (gore lijevo), Odziv (gore desno), F1 (dolje lijevo) i PR krivulja (dolje desno).}
+\end{figure}
+
+\textbf{Metrike segmentacijskih maski (Mask):}
+Slično kao i za granične kutije, segmentacija na razini piksela također ima svoje mjere preciznosti i odziva koje su prikazane na donjim krivuljama.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{slike/MaskP_curve.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/MaskR_curve.png}
+    
+    \vspace{0.5cm}
+    \includegraphics[width=0.45\textwidth]{slike/MaskF1_curve.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{slike/MaskPR_curve.png}
+    \caption{Mask metrike: Preciznost (gore lijevo), Odziv (gore desno), F1 (dolje lijevo) i PR krivulja (dolje desno).}
+\end{figure}
+
+\section{IZDVAJANJE 3D ZNAČAJKI I PROCJENA POZE}
+
+\subsection{Mapiranje i ekstrakcija oblaka točaka}
+Nakon uspješne primjene obučenog 2D modela za segmentaciju instanci na RGB slikama iz složenih scena (npr. posuda s preklapajućim voćem), uslijedio je zadatak određivanja trodimenzionalne pozicije svake instance. Korištenjem dubinskih (Depth) podataka i intrinzičnih parametara kamere, izvršeno je RGB-D poravnanje. Svaki piksel iz 2D maske detektiranog objekta projiciran je u 3D prostor, čime je dobiven izolirani oblak točaka (engl. point cloud) za svaku pojedinu instancu voća u sceni.
+
+\subsection{Određivanje centroida i usporedba metoda}
+Za svaki ekstrahirani oblak točaka voća, izvršena je procjena 3D centroida (težišta objekta). Algoritam za izračun centroida implementiran je korištenjem dvije različite metode:
+\begin{enumerate}
+    \item \textbf{Pristup fitingom geometrijskog modela (Geometric model fitting):} Korištenje algoritama za prilagodbu aproksimativnih geometrijskih oblika (poput sfere ili elipsoida) na oblak točaka i pronalazak središta tako aproksimiranog tijela. Ovdje su u obzir uzeti samo podaci vidljivi sa strane senzora.
+    \item \textbf{Ekstrakcija 3D granične kutije (3D Bounding Box):} Određivanje najmanjeg kvadra koji obuhvaća sve točke instance te izračun njegovog geometrijskog središta.
+\end{enumerate}
+
+Obje metode su uspoređene s obzirom na točnost pozicioniranja u uvjetima kada vidljivi oblak točaka predstavlja samo prednju plohu voća (zbog okluzije i kuta kamere). Rezultati su detaljno vizualizirani, a svaki student je analizu i evaluaciju odradio isključivo na klasi voća koja mu je dodijeljena.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{slike/3d_poza_pointcloud.png}
+    \caption{Simulirana vizualizacija oblaka točaka s ekstrahiranom 3D graničnom kutijom, mapiranim centroidom i koordinatnim sustavom.}
+    \label{fig:poza_pointcloud}
+\end{figure}
+
+\section{ZAKLJUČAK}
+U ovom seminaru prikazan je cjelovit sustav za detekciju, segmentaciju i 3D lokalizaciju objekata u prostoru. Kroz zadatke prikupljanja prilagođenog skupa podataka, obučavanja modela i 3D obrade oblaka točaka demonstriran je kompletan inženjerski proces vizualne percepcije za robote. Rezultati primjene različitih metoda za procjenu težišta ukazuju na važnost odabira prikladnog algoritma s obzirom na nesavršenost i nepotpunost senzorskih očitavanja u stvarnom svijetu. Implementirani pipeline direktno doprinosi mogućnostima humanoidnih robota za složene zadatke manipulacije i samostalne interakcije s okolinom.
+
+% --- LITERATURA ---
+\newpage
+\begin{thebibliography}{99}
+\bibitem{fsb_materijali} Fakultet strojarstva i brodogradnje (2026). Materijali s predavanja i vježbi iz kolegija Humanoidna robotika.
+\bibitem{roboflow} Roboflow (2026). Roboflow Documentation and Best Practices for Dataset Management.
+\end{thebibliography}
+
+\end{document}

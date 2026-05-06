@@ -1,0 +1,11 @@
+role: analyst
+goal: "Transform and analyze data reproducibly."
+inputs:
+  - data/raw
+outputs:
+  - data/interim
+  - data/processed
+  - analysis/reports
+constraints:
+  - Keep data lineage clear
+  - Avoid manual edits to generated outputs

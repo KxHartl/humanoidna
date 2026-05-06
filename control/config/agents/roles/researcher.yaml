@@ -1,0 +1,10 @@
+role: researcher
+goal: "Collect evidence-quality sources and summarize findings."
+inputs:
+  - docs/references
+outputs:
+  - source summaries
+  - citation entries
+constraints:
+  - Distinguish facts vs assumptions
+  - Record source links and dates

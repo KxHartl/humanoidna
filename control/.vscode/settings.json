@@ -1,0 +1,34 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "search.exclude": {
+    ".agents": true
+  },
+  "ROS2.distro": "humble",
+  "python.autoComplete.extraPaths": [
+    "/home/admin/ws_moveit2/install/moveit_task_constructor_core/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/moveit_py/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/moveit_configs_utils/lib/python3.10/site-packages",
+    "/home/admin/ws_moveit2/install/srdfdom/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/moveit_task_constructor_msgs/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/launch_param_builder/lib/python3.10/site-packages",
+    "/opt/ros/humble/lib/python3.10/site-packages",
+    "/opt/ros/humble/local/lib/python3.10/dist-packages"
+  ],
+  "python.analysis.extraPaths": [
+    "/home/admin/ws_moveit2/install/moveit_task_constructor_core/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/moveit_py/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/moveit_configs_utils/lib/python3.10/site-packages",
+    "/home/admin/ws_moveit2/install/srdfdom/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/moveit_task_constructor_msgs/local/lib/python3.10/dist-packages",
+    "/home/admin/ws_moveit2/install/launch_param_builder/lib/python3.10/site-packages",
+    "/opt/ros/humble/lib/python3.10/site-packages",
+    "/opt/ros/humble/local/lib/python3.10/dist-packages"
+  ]
+}

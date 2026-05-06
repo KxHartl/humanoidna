@@ -1,0 +1,6 @@
+axes.titlesize: 14
+axes.labelsize: 12
+figure.figsize: 8, 4.8
+grid.alpha: 0.3
+lines.linewidth: 2
+font.size: 11

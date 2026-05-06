@@ -1,0 +1,55 @@
+# Secrets
+*.env
+*.conf
+*.key
+*.cert
+*.pfx
+secrets/
+
+# Generated agent workspace
+.agent/
+
+# Training outputs and model files
+output/
+runs/
+*.pt
+*.zip
+
+# Submission exports and build artifacts
+for_submission/*.pdf
+for_submission/*.log
+for_submission/*.aux
+for_submission/*.lof
+for_submission/*.lot
+for_submission/*.out
+for_submission/*.toc
+for_submission/*.bbl
+for_submission/*.blg
+for_submission/slike/
+
+Individual student assignment 2/for_submission/*.pdf
+Individual student assignment 2/for_submission/*.log
+Individual student assignment 2/for_submission/*.aux
+Individual student assignment 2/for_submission/*.lof
+Individual student assignment 2/for_submission/*.lot
+Individual student assignment 2/for_submission/*.out
+Individual student assignment 2/for_submission/*.toc
+Individual student assignment 2/for_submission/*.bbl
+Individual student assignment 2/for_submission/*.blg
+Individual student assignment 2/for_submission/slike/
+
+# Generated docs and cache files inside the assignment folder
+Individual student assignment 2/output/
+Individual student assignment 2/runs/
+Individual student assignment 2/scratch/
+Individual student assignment 2/temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.bak
+temp/
+scratch/

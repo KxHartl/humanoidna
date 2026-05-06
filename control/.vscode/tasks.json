@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "New Task Worktree",
+      "type": "shell",
+      "command": "./scripts/git/new-task-worktree.sh ${input:taskSlug}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Copilot in Worktree",
+      "type": "shell",
+      "command": "./scripts/agents/run_copilot_task.sh ${input:worktreePath}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Claude in Worktree",
+      "type": "shell",
+      "command": "./scripts/agents/run_claude_task.sh ${input:worktreePath}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Codex in Worktree",
+      "type": "shell",
+      "command": "./scripts/agents/run_codex_task.sh ${input:worktreePath}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Gemini in Worktree",
+      "type": "shell",
+      "command": "./scripts/agents/run_gemini_task.sh ${input:worktreePath}",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "taskSlug",
+      "type": "promptString",
+      "description": "Task slug (e.g. literature-review)"
+    },
+    {
+      "id": "worktreePath",
+      "type": "promptString",
+      "description": "Worktree path (e.g. .agents/literature-review)"
+    }
+  ]
+}

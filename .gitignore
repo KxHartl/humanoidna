@@ -1,1 +1,40 @@
+# Project data that is generated or too large for git
 Vision_systems/data/
+object_detection_and_pose_estimation/data/
+zadaca_01/Realsense_humanoidna_cpp_project/Realsense_humanoidna/data/
+**/.agent/
+**/build/
+**/cmake-build-*/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/compile_commands.json
+**/Makefile
+
+# Build artifacts and generated outputs
+**/*.o
+**/*.obj
+**/*.so
+**/*.dll
+**/*.exe
+**/*.log
+**/*.aux
+**/*.bbl
+**/*.blg
+**/*.fdb_latexmk
+**/*.fls
+**/*.lof
+**/*.lot
+**/*.out
+**/*.toc
+
+# Large archives and model weights
+**/*.zip
+**/*.pt
+**/*.onnx
+
+# Common generated folders
+**/output/
+**/runs/
+**/scratch/
+**/temp/

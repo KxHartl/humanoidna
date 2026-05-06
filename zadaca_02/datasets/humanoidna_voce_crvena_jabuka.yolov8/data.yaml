@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 6
+names: ['Banana', 'Crvena jabuka', 'Limun', 'Naranca', 'Orah', 'Zelena jabuka']
+
+roboflow:
+  workspace: vjebacrta
+  project: vjebacrta
+  version: dataset
+  license: Private
+  url: https://app.roboflow.com/vjebacrta/vjebacrta/dataset

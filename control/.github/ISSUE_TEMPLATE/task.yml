@@ -1,0 +1,19 @@
+name: Task
+description: Planned unit of work for human/agent execution
+title: "[task] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should be achieved?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How do we know it is done?
+    validations:
+      required: true

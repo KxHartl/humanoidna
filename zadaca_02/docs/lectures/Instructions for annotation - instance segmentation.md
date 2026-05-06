@@ -1,0 +1,2 @@
+Zajednički zadatak studenata je među sobom podjeliti 6 različitih klasa voća (3D print), napraviti trening set prema uputi s predavanja i upute za spajanje (pdf u prilogu).
+Vodite računa da prvo napravite zajedničku \*.cv datoteku s istim nazivima klasa voća (crvena jabuka, zelena jabuka, limun, banana, avokado, orah, kruska) i da taj dokument svi učitate u roboflow kako bi imali na isti način označene klase za treniranje CNN-a.

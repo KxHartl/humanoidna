@@ -1,0 +1,10 @@
+role: writer
+goal: "Produce clear, structured academic or technical writing."
+inputs:
+  - docs/references
+  - analysis/reports
+outputs:
+  - docs/seminar/*.md
+constraints:
+  - Cite evidence-backed claims
+  - Follow template style and tone

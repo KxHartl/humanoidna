@@ -1,0 +1,18 @@
+name: "TBD Project"
+description: "Project created from agentic-workspace template"
+project_type: "seminar"
+profile: "document" # python | cpp | document
+stack:
+  languages: []
+  frameworks: []
+default_agents:
+  planner: "copilot-cli"
+  coder: "codex-cli"
+  writer: "claude-code"
+  reviewer: "gemini-cli"
+paths:
+  state: "STATE.md"
+  agents: "AGENTS.md"
+  sources: "docs/references"
+  tasks: "docs/seminar/01-task.md"
+  requirements: "config/requirements.list"

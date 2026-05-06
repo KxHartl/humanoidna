@@ -1,0 +1,26 @@
+Ovdje su navedeni koraci koje moraš samostalno obaviti kako bi dovršio sve zadatke i izvršio ih na simuliranom ili pravom robotu:
+
+1. **Pokretanje 1. zadatka**:
+   Pokreni skriptu iz terminala: `python src/01_polinom_prvog_reda.py`
+   Ovo će generirati datoteku `trajectory.txt` u korijenskom direktoriju.
+
+2. **Pokretanje 2. zadatka**:
+   Pokreni skriptu iz terminala: `python src/02_polinom_petog.py`
+   Ovo će generirati datoteku `trajectory_fifth_order.txt` s polinomom 5. reda.
+
+3. **Pokretanje 3. zadatka (Slanje trajektorije)**:
+   - Otvori `src/03_send_UR_traj.py`.
+   - Promijeni `HOST` varijablu (linija 3) da odgovara IP adresi tvog UR robota (ili PolyScope simulatora).
+   - Uvjeri se da se robot nalazi točno u **početnoj konfiguraciji zgloba** prije slanja!
+   - Pokreni slanje trajektorije: `python src/03_send_UR_traj.py`.
+
+4. **Pokretanje 4. zadatka (Task space)**:
+   Pokreni skriptu: `python src/04_task_space.py`
+   Ovo će izračunati kinematičke vrijednosti u radnom prostoru (TCP) i zapisati `trajectory_task_space.txt`. Ovdje se generira `servoj` naredba pozivom `get_inverse_kin()`.
+
+5. **Pokretanje 5. zadatka (Slanje task space trajektorije na robota)**:
+   - Ponovno otvori `src/03_send_UR_traj.py`.
+   - Promijeni `FILE_PATH` (linija 6) iz `"trajectory_fifth_order.txt"` u `"trajectory_task_space.txt"`.
+   - Uvjeri se da se robot nalazi točno u **početnoj konfiguraciji (p_i, R_i)**.
+   - Pokreni: `python src/03_send_UR_traj.py`.
+   - Promatraj ponašanje robota i usporedi ga s prijašnjom (zglobnom) trajektorijom.

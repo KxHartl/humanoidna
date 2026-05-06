@@ -1,0 +1,13 @@
+# scope|name|command|required|min_version|install_hint|notes
+global|git|git|yes|2.30|Install Git|Required for all repository operations and worktrees.
+global|gh|gh|recommended|2.0|Install GitHub CLI|Used for PRs, repo creation, and GitHub automation.
+global|docker|docker|recommended|24|Install Docker or Podman|Useful for sandboxed, reproducible runs.
+global|podman|podman|optional|4|Install Podman|Alternative to Docker for containerized workflows.
+global|python|python3|profile:python|3.11|Install Python 3.11+|Needed for Python projects, notebooks, and local helpers.
+global|node|node|profile:web|20|Install Node.js|Useful for web or JavaScript-based projects.
+global|pandoc|pandoc|profile:document|2.0|Install Pandoc|Required for DOCX export and document conversion.
+global|latexmk|latexmk|profile:document|4.0|Install TeX Live or MiKTeX|Required for LaTeX builds in document-heavy projects.
+global|codex|codex|optional|0.0|Install Codex CLI|Enable when using Codex as an agent.
+global|claude|claude|optional|0.0|Install Claude Code|Enable when using Claude as an agent.
+global|gemini|gemini|optional|0.0|Install Gemini CLI|Enable when using Gemini as an agent.
+global|copilot|copilot|optional|0.0|Install Copilot CLI|Enable when using Copilot CLI as an agent.

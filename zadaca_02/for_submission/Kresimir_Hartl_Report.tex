@@ -1,0 +1,56 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[croatian]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\geometry{a4paper, margin=1in}
+
+\title{Seminar: Detekcija voća i procjena poze primjenom dubokog učenja}
+\author{Krešimir Hartl \\ Kolegij: Humanoidna robotika, 10. semestar \\ Ustanova: Fakultet strojarstva i brodogradnje (FSB)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Uvod i priprema skupa podataka}
+U sklopu ovog zadatka cilj je bio razviti sustav sposoban detektirati voće u kompleksnim scenama (npr. kutija ili zdjela s preklapajućim voćem) primjenom \textit{instance segmentation} modela, a zatim izračunati 3D poziciju (centroid) detektiranih plodova u prostoru pomoću točkastog oblaka (\textit{point cloud}). 
+
+Za zadatak je korišteno 6 različitih klasa voća (isprintanih 3D pisačem): crvena jabuka, zelena jabuka, limun, banana, orah i naranča. Studenti su podijelili klase te je svatko bio zadužen za pripremu i anotaciju vlastitih slika. Osobno sam bio zadužen za rad i evaluaciju nad klasom \textbf{"Crvena jabuka"}.
+
+\section{Anotacija i izvoz podataka}
+Kako bi model uspješno razlikovao objekte od pozadine i međusobno preklapajuće plodove, izvršena je anotacija slika tehnikom \textit{instance segmentation} (segmentacija instanci) u alatu \textbf{Roboflow}. Prije početka procesa stvorena je \texttt{.csv} datoteka sa strogo definiranim i usuglašenim nazivima klasa.
+
+Svaki student je prvo anotirao vlastiti trening skup bez primjene augmentacija. Nakon toga su svi pojedinačni skupovi spojeni u jedan zajednički skup podataka koji je obuhvaćao svih 6 klasa. Ovaj objedinjeni skup podataka je zatim učitan na Roboflow, na kojem su primijenjene tehnike augmentacije kako bi se povećala robusnost i generalizacijska sposobnost modela na nove podatke. 
+
+Završni \textit{dataset} eksportiran je u formatu \textbf{YOLOv8} za segmentaciju te preuzet u radno okruženje za treniranje u obliku datoteke \texttt{humanoidna\_voce\_sve\_v3.yolov8}.
+
+\section{Treniranje modela}
+Sukladno zadanim smjernicama, za učenje je upotrijebljena arhitektura novog modela \textbf{YOLOv26nano-seg} (temeljena na zadanoj datoteci \texttt{yolo26n-seg.pt}). Trening je obavljen korištenjem službene \texttt{ultralytics} Python biblioteke sa sljedećim parametrima:
+\begin{itemize}
+    \item \textbf{Model}: YOLOv26nano za segmentaciju instanci (\texttt{yolo26n-seg.pt})
+    \item \textbf{Broj epoha}: 100
+    \item \textbf{Veličina ulazne slike (\texttt{imgsz})}: 640x640 piksela
+    \item \textbf{Uređaj}: GPU (NVIDIA)
+\end{itemize}
+
+Model je treniran na spojenom skupu podataka sa svih 6 klasa voća, pri čemu je zabilježena vrlo brza konvergencija greške treninga i visoka točnost prepoznavanja. Završne težine modela (\texttt{best.pt}) spremljene su u mapu rezultata novog treninga.
+
+\section{Evaluacija i procjena poze (3D)}
+Nakon uspješnog treninga na cjelokupnom setu, evaluacija se izvršila na izdvojenom skupu podataka za klasu "Crvena jabuka" (\texttt{humanoidna\_voce\_crvena\_jabuka.yolov8}).
+Model je evaluiran preko standardnih YOLO mjernih pokazatelja (\texttt{mAP50} i \texttt{mAP50-95}) kako za aproksimaciju okvira (\textit{bounding box}), tako i za same segmentacijske maske. Model pokazuje točnost blizu 97\% na mAP50 metrici.
+
+U drugoj fazi, razvijena je skripta u programskom jeziku Python (\texttt{evaluate\_new\_model.py}) koja iterira kroz sve sirove RGB slike (\texttt{.png}) te nad njima radi pretpostavku maske (\textit{inference}). Maske filtrirane za klasu "Crvena jabuka" su mapirane na odgovarajuće točke u 3D oblaku točaka (\texttt{.pcd} 640x480).
+Od tih izoliranih instanci točaka, uklonjeni su stršeći elementi (pomoću \textit{statistical outlier removal} funkcije), a potom su se izračunali centroidi korištenjem dvije metode:
+\begin{enumerate}
+    \item \textbf{Centar 3D okvira ograničenja (AABB)}: Centar "kutije" paralelnih s osima koordinatnog sustava, koja obuhvaća detektirani set točaka.
+    \item \textbf{Geometrijsko prepoznavanje modela (Sphere fitting)}: Aproksimacija sfere \textit{least-squares} metodom na odabranom skupu točaka na površini voća, što je prikladno obzirom na prirodni, sferni oblik jabuke.
+\end{enumerate}
+
+\section{Zaključak}
+Implementirani YOLOv26nano-seg model uspješno izdvaja pojedinačne instance voća u scenarijima gustog preklapanja. Metoda prilagodbe sfere nad segmentiranim točkastim oblakom daje točnije pozicije centra gravitacije za predmete koji su djelomično zaklonjeni, za razliku od aproksimacije centra preko "bounding box-a" čije je središte često asimetrično ukoliko model ne obuhvaća cijeli oblik jabuke.
+Ovakav sustav nudi pouzdanu ulaznu pretpostavku poze (pozicije i orijentacije, s centroidom u jezgri sustava) primjenjivu za integraciju s hvataljkama kod humanoidnih ili suradničkih robotskih ruku.
+
+\end{document}
