@@ -1,0 +1,148 @@
+
+--- Page 46 ---
+ZADATAK 1: Implementacija P regulatora
+• Opis zadatka: Potrebno je prilagoditi postojeći simulacijski pipeline tako da robot prati step
+referencu u joint space-u.
+Samostalni zadatak – izvođaču vježbi pokazati rezultate 
+• Uputa: Potrebno je nadopuniti zadani kod implementacijom:
+1. Početnog i željenog stanja sustava
+𝑞𝑖 = [0, 0, 0], 𝑞𝑓 = 1, −0.8, 0.5
+2. Robot mora pratiti step referencu, vrijeme skoka je 1 sekunda (𝑡𝑠 = 1.0𝑠) – hint možete 
+definirati preko jednostavnog ‘if’ uvjeta
+𝑞𝑑 𝑡 = ቊ𝑞0, 𝑡 < 𝑡𝑠
+𝑞𝑓, 𝑡 ≥ 𝑡𝑠
+3. Proporcionalnog regulatora (𝐾𝑝 za svaki zglob iznosi 80 
+𝑁𝑚
+𝑟𝑎𝑑)
+4. Spremanje podataka u sim_data_zadatak1.npz
+5. Vizualni prikaz rezultata
+6. Izračunati relevantne metrike odziva na referencu (overshoot, settling time, steady-
+state error)
+• UPUTA: Simulaciju zaustavite kada robot prestane oscilirati (2-3 sekunde nakon).
+--- Page 47 ---
+ZADATAK 1: Implementacija P regulatora, step
+Rješenja
+
+--- Page 48 ---
+ZADATAK 1: Implementacija P regulatora, step
+Rješenja
+
+--- Page 49 ---
+ZADATAK 2: Implementacija P regulatora
+• Opis zadatka: Potrebno je prilagoditi postojeći simulacijski pipeline tako da robot prati 
+sinusoidnu referencu u joint space-u.
+Samostalni zadatak – izvođaču vježbi pokazati rezultate 
+• Uputa: Potrebno je nadopuniti zadani kod implementacijom:
+1. Robot mora pratiti sinusoidnu referencu, sa sljedećim parametrima: 𝐴 = 0.5,0.4,0.3 , 𝑓
+= 0.5𝐻𝑧, srednja konfiguracija (oko koje zakon oscilira) - 𝑞𝑐 = 0, −0.3,0.2
+𝑞𝑑 𝑡 = 𝑞𝐶 + 𝐴 sin 2𝜋𝑓𝑡
+2. Proporcionalnog regulatora (𝐾𝑝 za svaki zglob iznosi 80 
+𝑁𝑚
+𝑟𝑎𝑑)
+3. Spremanje podataka u sim_data_zadatak2.npz
+4. Vizualni prikaz rezultata
+5. Izračunati relevantnu metrike odziva na referencu (RMSE)
+• UPUTA: Simulaciju zaustavite nakon cca. 10 sekundi.
+
+--- Page 50 ---
+ZADATAK 2: Implementacija P regulatora
+Rješenja
+
+--- Page 51 ---
+ZADATAK 2: Implementacija P regulatora
+Rješenja
+
+--- Page 52 ---
+ZADATAK 3: Implementacija PD regulatora
+Samostalni zadatak – izvođaču vježbi pokazati rezultate 
+• Opis zadatka: Potrebno je proširiti postojeći simulacijski pipeline tako da robot prati odabranu 
+referencu u joint space-u pomoću PD regulatora.
+• Uputa: Potrebno je nadopuniti zadani kod implementacijom:
+1. Odabir referentne trajektorije - potrebno je odabrati jednu od prethodno korištenih referenci 
+(step ili sinusoidna referenca)
+2. Dodavanje derivacijskog člana
+3. Proporcionalno pojačanje 𝐾𝑝može ostati jednako kao u prethodnim zadacima, Vrijednost 
+derivacijskog pojačanja 𝐾𝑑 potrebno je odabrati eksperimentalno tako da se postigne manje 
+oscilacija, manji overshoot te brže smirivanje sustava
+4. Spremanje podataka u sim_data_zadatak3_$vrsta_reference$.npz
+5. Vizualni prikaz rezultata
+6. Izračunati relevantnu metrike odziva na referencu
+• HINT: POSTAVITI RAZLIČITE VRIJEDNOSTI POJAČANJA 𝐾𝑑 ZA POJEDINI ZGLOB.
+• HINT: ሶ𝑞 𝑡 = 0 = 0, a trenutno stanje brzine čitamo analogno poziciji (data.qvel.copy())
+• HINT: potrebno je definirati zasebno grešku te brzinu greške
+--- Page 53 ---
+ZADATAK 4: Implementacija PD regulatora uz disturbance
+Samostalni zadatak – izvođaču vježbi pokazati rezultate 
+• Opis zadatka: Potrebno je nadograditi postojeći PD regulator uvođenjem vanjske smetnje 
+(disturbance) te analizirati njen utjecaj na ponašanje sustava.
+• Uputa: Potrebno je nadopuniti zadani kod implementacijom:
+1. Odabir referentne trajektorije - potrebno je odabrati jednu od prethodno korištenih referenci 
+(step ili sinusoidna referenca) – istu kao u prošlom zadatku
+2. Proporcionalno pojačanje 𝐾𝑝 i derivativno pojačanje 𝐾𝑑 moraju ostati jednaki kao u prošlom 
+zadatku.
+3. Uvođenje modela smetnje za sljedeće iznose: 𝑑 = 5.0, 5.0, 5.0 𝑁𝑚
+4. Spremanje podataka u sim_data_zadatak4_$vrsta_reference$.npz
+5. Vizualni prikaz rezultata
+6. Izračunati relevantnu metrike odziva na referencu 
+• HINT: dodavanje smetnje uz upravljački signal (mi SIMULIRAMO smetnju kao dio upravljačkog signala)
+𝑢𝑡𝑜𝑡𝑎𝑙 = 𝑢 𝑡 + 𝑑
+--- Page 54 ---
+ZADATAK 5: Implementacija PID regulatora
+Samostalni zadatak – izvođaču vježbi pokazati rezultate 
+• Opis zadatka: Potrebno je proširiti postojeći PD regulator tako da se smanji ili ukloni steady-
+state error pri praćenju odabrane reference u joint space-u pomoću PID regulatora.
+• Uputa: Potrebno je nadopuniti zadani kod implementacijom:
+1. Odabir referentne trajektorije - potrebno je odabrati jednu od prethodno korištenih referenci 
+(step ili sinusoidna referenca) – istu kao u prošlom zadatku
+2. Dodavanje integralnog člana
+3. Proporcionalno pojačanje 𝐾𝑝 i derivativno pojačanje 𝐾𝑑 mogu ostati jednaki kao u 
+prethodnom zadatku. Vrijednost integralnog pojačanja 𝐾𝑖 potrebno je odabrati 
+eksperimentalno tako da se ukloni steady-state error izazvan simuliranom smetnjom, uz 
+zadržavanje stabilnosti sustava. Ovime simuliramo nesavršenosti i nelinearnosti sustava.
+4. Spremanje podataka u sim_data_zadatak5_$vrsta_reference$.npz
+5. Vizualni prikaz rezultata
+6. Izračunati relevantnu metrike odziva na referencu 
+• HINT: potrebno je definirati zasebno grešku, derivaciju (brzinu) greške te integral greške
+--- Page 55 ---
+ZADATAK 6: PID u prisutnosti white noise-a
+Samostalni zadatak – izvođaču vježbi pokazati rezultate 
+• Opis zadatka: Potrebno je nadograditi postojeći PID regulator dodavanjem white noise
+komponente u mjerenje položaja zglobova te analizirati utjecaj šuma na ponašanje sustava.
+• Uputa: Potrebno je nadopuniti zadani kod implementacijom:
+1. Odabir referentne trajektorije - potrebno je odabrati jednu od prethodno korištenih referenci 
+(step ili sinusoidna referenca) – istu kao u prošlom zadatku
+2. Pojačanja 𝐾𝑝, 𝐾𝑑 𝑖 𝐾𝑖mogu ostati jednaki kao u prethodnom zadatku. Prema potrebi, u cilju 
+dobivanja boljeg odziva, možete promijeniti parametre.
+2. Potrebno je implementirati white noise koji simulira šum u mjerenjima položaja zglobova, 
+nesavršenosti senzora, tj. realne uvjete rada robotskog sustava. Standardna devijacija šuma 
+neka bude 0.02
+3. Spremanje podataka u sim_data_zadatak6_$vrsta_reference$.npz
+4. Vizualni prikaz rezultata
+5. Izračunati relevantnu metrike odziva na referencu 
+• HINT: šum se dodaje na izmjerenu vrijednost položaja: 𝑞𝑚𝑒𝑎𝑠 = 𝑞 + 𝑛 (𝑞𝑚𝑒𝑎𝑠 = konačni 
+izmjereni položaj, 𝑞 je stvarno izmjeren podatak iz MuJoCo, 𝑛 = šum)
+• HINT: White noise generira se iz normalne distribucije
+• HINT: Regulator koristi šumovito mjerenje za estimaciju greške
+--- Page 56 ---
+Upute za predaju izvješća s vježbe
+• Izvješće s vježbe treba sadržavati oba plota (praćenje reference te upravljački 
+zakon) za sva tri zgloba za sve zadatke
+• Prema tome što ste odabrali kao referencu (step ili sinus), potrebno je napraviti 
+tabličnu usporedbu svih zadataka
+• Broj metrika ovisi o odabranoj referenci
+• Rok predaje: 8.5., 16:00. Predaja izvješća preko e-učenja.
+JOINT ZADATAK REFERENCA POJAČANJA METRIKA 1 METRIKA 2 METRIKA 3
+1 1
+2 1
+3 1
+1 2
+2 2
+3 2
+…
+…
+…
+…
+…
+…
+…
+• NAPOMENA: Pazite da su vremena simulacije približno ista.
