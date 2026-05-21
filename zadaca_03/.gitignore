@@ -22,6 +22,7 @@ __pycache__/
 *.nav
 *.snm
 *.vrb
+*.mp4
 
 # RAG vector store (auto-generated, large)
 data/rag/vector_store/
