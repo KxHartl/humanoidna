@@ -1,0 +1,114 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\captures\\view_02\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\captures\\view_02\\cloud.pcd",
+  "target_class": "Naranca",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Naranca\\view_02\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Naranca",
+      "confidence": 0.9955905675888062,
+      "bbox_xyxy": [
+        178,
+        67,
+        250,
+        139
+      ],
+      "mask_area_px": 3124,
+      "num_points_raw": 3124,
+      "num_points_clean": 2992,
+      "centroid_camera_xyz": [
+        -0.07240294760845123,
+        -0.08906876026617891,
+        0.38508290491679453
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Naranca\\view_02\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "Naranca",
+      "confidence": 0.9353994727134705,
+      "bbox_xyxy": [
+        139,
+        351,
+        206,
+        419
+      ],
+      "mask_area_px": 3659,
+      "num_points_raw": 3659,
+      "num_points_clean": 3496,
+      "centroid_camera_xyz": [
+        -0.10982963379080359,
+        0.09640866783138544,
+        0.4239325139765336
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Naranca\\view_02\\rgb_instance_01.pcd"
+    },
+    {
+      "instance_id": 2,
+      "class_name": "Naranca",
+      "confidence": 0.24937541782855988,
+      "bbox_xyxy": [
+        138,
+        351,
+        205,
+        417
+      ],
+      "mask_area_px": 3654,
+      "num_points_raw": 3654,
+      "num_points_clean": 3488,
+      "centroid_camera_xyz": [
+        -0.10980867032910091,
+        0.09619579444759004,
+        0.42397679728584003
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Naranca\\view_02\\rgb_instance_02.pcd"
+    },
+    {
+      "instance_id": 3,
+      "class_name": "Naranca",
+      "confidence": 0.18690334260463715,
+      "bbox_xyxy": [
+        139,
+        351,
+        207,
+        418
+      ],
+      "mask_area_px": 3680,
+      "num_points_raw": 3680,
+      "num_points_clean": 3520,
+      "centroid_camera_xyz": [
+        -0.10978120849679478,
+        0.09639621685386043,
+        0.4239647924646058
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Naranca\\view_02\\rgb_instance_03.pcd"
+    },
+    {
+      "instance_id": 4,
+      "class_name": "Naranca",
+      "confidence": 0.10184381902217865,
+      "bbox_xyxy": [
+        177,
+        67,
+        250,
+        139
+      ],
+      "mask_area_px": 3154,
+      "num_points_raw": 3154,
+      "num_points_clean": 3022,
+      "centroid_camera_xyz": [
+        -0.07233713505497483,
+        -0.08905890413876166,
+        0.3851674560341592
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Naranca\\view_02\\rgb_instance_04.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    -0.07240294760845123,
+    -0.08906876026617891,
+    0.38508290491679453
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005620\\captures\\view_02\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005620\\captures\\view_02\\cloud.pcd",
+  "target_class": "Limun",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005620\\segment\\Limun\\view_02\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Limun",
+      "confidence": 0.8151705861091614,
+      "bbox_xyxy": [
+        283,
+        168,
+        350,
+        229
+      ],
+      "mask_area_px": 3600,
+      "num_points_raw": 3600,
+      "num_points_clean": 3413,
+      "centroid_camera_xyz": [
+        -0.009400002610579912,
+        -0.032999605297880756,
+        0.4132209432516285
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005620\\segment\\Limun\\view_02\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "Limun",
+      "confidence": 0.19123221933841705,
+      "bbox_xyxy": [
+        282,
+        167,
+        351,
+        230
+      ],
+      "mask_area_px": 3594,
+      "num_points_raw": 3594,
+      "num_points_clean": 3424,
+      "centroid_camera_xyz": [
+        -0.009305621589226015,
+        -0.032894296887402516,
+        0.41324009329393924
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005620\\segment\\Limun\\view_02\\rgb_instance_01.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    -0.009400002610579912,
+    -0.032999605297880756,
+    0.4132209432516285
+  ],
+  "fused_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005620\\segment\\Limun\\view_02\\rgb_target_fused.pcd"
+}

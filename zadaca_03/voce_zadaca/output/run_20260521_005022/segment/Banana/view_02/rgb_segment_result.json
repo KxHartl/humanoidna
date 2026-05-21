@@ -1,0 +1,35 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\captures\\view_02\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\captures\\view_02\\cloud.pcd",
+  "target_class": "Banana",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\segment\\Banana\\view_02\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Banana",
+      "confidence": 0.9609124660491943,
+      "bbox_xyxy": [
+        13,
+        147,
+        106,
+        331
+      ],
+      "mask_area_px": 8164,
+      "num_points_raw": 8164,
+      "num_points_clean": 7771,
+      "centroid_camera_xyz": [
+        -0.18188243400841939,
+        -0.0033763122327180282,
+        0.3962497931429662
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\segment\\Banana\\view_02\\rgb_instance_00.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    -0.18188243400841939,
+    -0.0033763122327180282,
+    0.3962497931429662
+  ],
+  "fused_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\segment\\Banana\\view_02\\rgb_target_fused.pcd"
+}

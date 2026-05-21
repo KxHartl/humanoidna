@@ -1,0 +1,55 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_004507\\captures\\view_01\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_004507\\captures\\view_01\\cloud.pcd",
+  "target_class": "Zelena jabuka",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_004507\\segment\\Zelena_jabuka\\view_01\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Zelena jabuka",
+      "confidence": 0.9555794596672058,
+      "bbox_xyxy": [
+        211,
+        280,
+        270,
+        339
+      ],
+      "mask_area_px": 2983,
+      "num_points_raw": 2983,
+      "num_points_clean": 2961,
+      "centroid_camera_xyz": [
+        -0.06326188267344199,
+        0.04749431716808492,
+        0.4424863425169954
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_004507\\segment\\Zelena_jabuka\\view_01\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "Zelena jabuka",
+      "confidence": 0.16805250942707062,
+      "bbox_xyxy": [
+        211,
+        280,
+        270,
+        339
+      ],
+      "mask_area_px": 2984,
+      "num_points_raw": 2984,
+      "num_points_clean": 2961,
+      "centroid_camera_xyz": [
+        -0.06326526015171607,
+        0.047485391987749995,
+        0.44248431617043704
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_004507\\segment\\Zelena_jabuka\\view_01\\rgb_instance_01.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    -0.06326188267344199,
+    0.04749431716808492,
+    0.4424863425169954
+  ],
+  "fused_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_004507\\segment\\Zelena_jabuka\\view_01\\rgb_target_fused.pcd"
+}

@@ -1,0 +1,55 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_022312\\captures\\view_01\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_022312\\captures\\view_01\\cloud.pcd",
+  "target_class": "Limun",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_022312\\segment\\view_01\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Limun",
+      "confidence": 0.24038545787334442,
+      "bbox_xyxy": [
+        325,
+        179,
+        388,
+        244
+      ],
+      "mask_area_px": 3392,
+      "num_points_raw": 3392,
+      "num_points_clean": 3269,
+      "centroid_camera_xyz": [
+        0.01973174707142051,
+        -0.024582424271315746,
+        0.41486939992989263
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_022312\\segment\\view_01\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "Limun",
+      "confidence": 0.1848994791507721,
+      "bbox_xyxy": [
+        326,
+        179,
+        389,
+        243
+      ],
+      "mask_area_px": 3384,
+      "num_points_raw": 3384,
+      "num_points_clean": 3199,
+      "centroid_camera_xyz": [
+        0.019794167822775332,
+        -0.02495667585521842,
+        0.41476275929997736
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_022312\\segment\\view_01\\rgb_instance_01.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    0.01973174707142051,
+    -0.024582424271315746,
+    0.41486939992989263
+  ],
+  "fused_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_022312\\segment\\view_01\\rgb_target_fused.pcd"
+}

@@ -1,0 +1,74 @@
+{
+  "captures_dir": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures",
+  "required_views": 3,
+  "views_captured": 3,
+  "pairs": [
+    [
+      "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00\\rgb.png",
+      "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00\\cloud.pcd"
+    ],
+    [
+      "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01\\rgb.png",
+      "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01\\cloud.pcd"
+    ],
+    [
+      "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02\\rgb.png",
+      "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02\\cloud.pcd"
+    ]
+  ],
+  "base_tcp_transform_paths": [
+    "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00\\T_base_tcp.npy",
+    "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01\\T_base_tcp.npy",
+    "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02\\T_base_tcp.npy"
+  ],
+  "view_results": [
+    {
+      "view_index": 0,
+      "view_dir": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00",
+      "rgb_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00\\rgb.png",
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00\\cloud.pcd",
+      "depth_npy_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00\\depth_m.npy",
+      "tcp_pose_base": [
+        -0.325889038276175,
+        0.1092204293537409,
+        0.3627122047205508,
+        -2.9855161856888466,
+        -0.6064810429203353,
+        0.33029053567081923
+      ],
+      "t_base_tcp_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_00\\T_base_tcp.npy"
+    },
+    {
+      "view_index": 1,
+      "view_dir": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01",
+      "rgb_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01\\rgb.png",
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01\\cloud.pcd",
+      "depth_npy_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01\\depth_m.npy",
+      "tcp_pose_base": [
+        -0.42417235050381585,
+        0.17756604271145926,
+        0.2538179564917493,
+        -1.5465208904702639,
+        -2.4312875939649925,
+        0.060213827187323724
+      ],
+      "t_base_tcp_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_01\\T_base_tcp.npy"
+    },
+    {
+      "view_index": 2,
+      "view_dir": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02",
+      "rgb_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02\\rgb.png",
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02\\cloud.pcd",
+      "depth_npy_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02\\depth_m.npy",
+      "tcp_pose_base": [
+        -0.5370065615969688,
+        0.1837006147018354,
+        0.26298762597771785,
+        0.298002360850589,
+        -2.965019073668053,
+        -0.26496146369307194
+      ],
+      "t_base_tcp_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030300\\captures\\view_02\\T_base_tcp.npy"
+    }
+  ]
+}

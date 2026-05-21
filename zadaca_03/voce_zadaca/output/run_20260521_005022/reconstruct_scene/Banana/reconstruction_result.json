@@ -1,0 +1,118 @@
+{
+  "target_class": "Banana",
+  "views_used": 3,
+  "registered_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\reconstruct_scene\\Banana\\target_registered.pcd",
+  "centroid_marker_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\reconstruct_scene\\Banana\\target_centroid_marker.pcd",
+  "centroid_base_xyz": [
+    -0.4717000084699481,
+    0.8883927782863043,
+    0.05357651383878923
+  ],
+  "view_infos": [
+    {
+      "view_index": 0,
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\segment\\Banana\\view_00\\rgb_target_fused.pcd",
+      "num_points_input": 650,
+      "num_points_transformed": 615,
+      "icp_applied": false,
+      "icp_fitness": 1.0,
+      "icp_inlier_rmse": 0.0,
+      "icp_transformation": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "view_index": 1,
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\segment\\Banana\\view_01\\rgb_target_fused.pcd",
+      "num_points_input": 532,
+      "num_points_transformed": 532,
+      "icp_applied": true,
+      "icp_fitness": 0.0,
+      "icp_inlier_rmse": 0.0,
+      "icp_transformation": [
+        [
+          -0.13023658207352728,
+          0.7318364087200248,
+          -0.6689199530299443,
+          -0.39001100814958733
+        ],
+        [
+          -0.9554503505813758,
+          0.08759291939812147,
+          0.2818547640988901,
+          2.552286328744561
+        ],
+        [
+          0.26486422986830854,
+          0.6758276047507168,
+          0.6878255508435094,
+          0.2683233366778143
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "view_index": 2,
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_005022\\segment\\Banana\\view_02\\rgb_target_fused.pcd",
+      "num_points_input": 666,
+      "num_points_transformed": 666,
+      "icp_applied": true,
+      "icp_fitness": 0.0,
+      "icp_inlier_rmse": 0.0,
+      "icp_transformation": [
+        [
+          0.7111434479960335,
+          -0.5997301873074672,
+          0.3668769532206445,
+          -0.045000554411372753
+        ],
+        [
+          0.6251974598961547,
+          0.7781444613472678,
+          0.06016089605355375,
+          0.40416699906126263
+        ],
+        [
+          -0.321563574603388,
+          0.18658751219393216,
+          0.9283221250091859,
+          -0.15464794588321348
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    }
+  ]
+}

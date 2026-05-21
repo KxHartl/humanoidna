@@ -1,0 +1,17 @@
+{
+  "target_class": "Crvena jabuka",
+  "views_used": 3,
+  "instances": [
+    {
+      "instance_id": 0,
+      "centroid_base_xyz": [
+        -0.5499039264859132,
+        0.11873251065819604,
+        0.06492732827690438
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_025012\\reconstruct\\instance_00.pcd",
+      "num_points": 1413
+    }
+  ],
+  "global_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_025012\\reconstruct\\global_merged.pcd"
+}

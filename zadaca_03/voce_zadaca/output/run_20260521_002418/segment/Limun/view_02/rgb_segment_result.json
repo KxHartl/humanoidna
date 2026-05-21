@@ -1,0 +1,34 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\captures\\view_02\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\captures\\view_02\\cloud.pcd",
+  "target_class": "Limun",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Limun\\view_02\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Limun",
+      "confidence": 0.11475823819637299,
+      "bbox_xyxy": [
+        513,
+        312,
+        580,
+        365
+      ],
+      "mask_area_px": 3175,
+      "num_points_raw": 3175,
+      "num_points_clean": 3028,
+      "centroid_camera_xyz": [
+        0.16227926945257218,
+        0.06922676587597894,
+        0.45438641439655814
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Limun\\view_02\\rgb_instance_00.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    0.16227926945257218,
+    0.06922676587597894,
+    0.45438641439655814
+  ]
+}

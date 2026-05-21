@@ -1,0 +1,10 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030100\\captures\\view_01\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030100\\captures\\view_01\\cloud.pcd",
+  "target_class": "Crvena jabuka",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_030100\\segment\\view_01\\rgb_overlay.png",
+  "instances": [],
+  "best_instance_id": null,
+  "best_centroid_camera_xyz": null,
+  "fused_pcd_path": null
+}

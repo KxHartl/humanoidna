@@ -1,0 +1,54 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\captures\\view_01\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\captures\\view_01\\cloud.pcd",
+  "target_class": "Zelena jabuka",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Zelena_jabuka\\view_01\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Zelena jabuka",
+      "confidence": 0.9556394815444946,
+      "bbox_xyxy": [
+        366,
+        128,
+        430,
+        195
+      ],
+      "mask_area_px": 3458,
+      "num_points_raw": 3458,
+      "num_points_clean": 3327,
+      "centroid_camera_xyz": [
+        0.043583361369252276,
+        -0.05130941161467644,
+        0.37506764474164483
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Zelena_jabuka\\view_01\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "Zelena jabuka",
+      "confidence": 0.14964933693408966,
+      "bbox_xyxy": [
+        366,
+        128,
+        431,
+        195
+      ],
+      "mask_area_px": 3458,
+      "num_points_raw": 3458,
+      "num_points_clean": 3328,
+      "centroid_camera_xyz": [
+        0.043571757746506665,
+        -0.05127887358629288,
+        0.3750673239477552
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_002418\\segment\\Zelena_jabuka\\view_01\\rgb_instance_01.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    0.043583361369252276,
+    -0.05130941161467644,
+    0.37506764474164483
+  ]
+}

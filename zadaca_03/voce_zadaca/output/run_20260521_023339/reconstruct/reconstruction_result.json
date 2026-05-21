@@ -1,0 +1,17 @@
+{
+  "target_class": "Limun",
+  "views_used": 3,
+  "instances": [
+    {
+      "instance_id": 0,
+      "centroid_base_xyz": [
+        -0.5077873336891808,
+        0.14578434732024442,
+        0.0534260698782424
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_023339\\reconstruct\\instance_00.pcd",
+      "num_points": 4673
+    }
+  ],
+  "global_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_023339\\reconstruct\\global_merged.pcd"
+}

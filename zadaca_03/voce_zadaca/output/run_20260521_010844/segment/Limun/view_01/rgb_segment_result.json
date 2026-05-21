@@ -1,0 +1,55 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_010844\\captures\\view_01\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_010844\\captures\\view_01\\cloud.pcd",
+  "target_class": "Limun",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_010844\\segment\\Limun\\view_01\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Limun",
+      "confidence": 0.5121806859970093,
+      "bbox_xyxy": [
+        225,
+        171,
+        285,
+        231
+      ],
+      "mask_area_px": 3124,
+      "num_points_raw": 3124,
+      "num_points_clean": 2965,
+      "centroid_camera_xyz": [
+        -0.051673481036700046,
+        -0.032331046789042764,
+        0.4326263286512578
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_010844\\segment\\Limun\\view_01\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "Limun",
+      "confidence": 0.34651440382003784,
+      "bbox_xyxy": [
+        226,
+        171,
+        286,
+        231
+      ],
+      "mask_area_px": 3156,
+      "num_points_raw": 3156,
+      "num_points_clean": 2996,
+      "centroid_camera_xyz": [
+        -0.051232008136018053,
+        -0.0324944178561353,
+        0.432528726468099
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_010844\\segment\\Limun\\view_01\\rgb_instance_01.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    -0.051673481036700046,
+    -0.032331046789042764,
+    0.4326263286512578
+  ],
+  "fused_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_010844\\segment\\Limun\\view_01\\rgb_target_fused.pcd"
+}

@@ -1,0 +1,35 @@
+{
+  "image_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_011532\\captures\\view_01\\rgb.png",
+  "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_011532\\captures\\view_01\\cloud.pcd",
+  "target_class": "Zelena jabuka",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_011532\\segment\\Zelena_jabuka\\view_01\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "Zelena jabuka",
+      "confidence": 0.9418726563453674,
+      "bbox_xyxy": [
+        212,
+        279,
+        270,
+        338
+      ],
+      "mask_area_px": 3000,
+      "num_points_raw": 3000,
+      "num_points_clean": 2950,
+      "centroid_camera_xyz": [
+        -0.06336191949829206,
+        0.0466018109762315,
+        0.4417240886364953
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_011532\\segment\\Zelena_jabuka\\view_01\\rgb_instance_00.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    -0.06336191949829206,
+    0.0466018109762315,
+    0.4417240886364953
+  ],
+  "fused_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\voce_zadaca\\output\\run_20260521_011532\\segment\\Zelena_jabuka\\view_01\\rgb_target_fused.pcd"
+}
