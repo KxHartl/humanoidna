@@ -1,58 +1,57 @@
-# LiteRealm
+# Pick-and-Place Zadaća 3
 
-Minimalan template za brzu izradu seminara, zadaća i akademskih radova uz pomoć AI agenata (Gemini, Claude, Copilot…).
+Repozitorij za interaktivnu Pick-and-Place CLI aplikaciju za branje voća s UR5e robotom i RealSense RGB-D kamerom.
 
-## Pokretanje novog projekta
+## Što projekt radi
 
-```powershell
-# Windows — osnovni setup:
-.\.ai\scripts\bootstrap.ps1 -Name "Moj_Seminar"
-
-# S RAG podrškom (citiranje iz PDF izvora):
-.\.ai\scripts\bootstrap.ps1 -Name "Moj_Seminar" -Rag cloud
-```
-
-```bash
-# Linux / macOS:
-./.ai/scripts/bootstrap.sh --name "Moj_Seminar"
-./.ai/scripts/bootstrap.sh --name "Moj_Seminar" --rag cloud
-```
-
-Bootstrap radi 5 stvari: postavlja naziv, kreira direktorije, konfigurira `.env`, instalira Python pakete, i provjerava LaTeX.
+- Snima scenu iz više pozicija kamere.
+- Pokreće YOLO detekciju i lokalizaciju voća.
+- Rekonstruira point cloud i računa 3D centroide.
+- Planira pick i place trajektoriju.
+- Šalje izvršenje prema UR robotu.
 
 ## Struktura
 
-| Direktorij | Svrha |
+| Putanja | Svrha |
 |---|---|
-| `docs/` | Seminari, `.tex` fajlovi, generirani PDF-ovi. **Tvoj rad.** |
-| `src/` | Programski kod, ako je potreban. |
-| `dist/` | Finalne verzije za predaju. |
-| `data/raw/` | Izvorni podaci i literatura. |
-| `data/processed/` | Obrađeni podaci. |
-| `data/rag/sources/` | PDF izvori za RAG pretragu i citiranje. |
-| `.ai/` | Konfiguracija, predlošci, RAG pipeline. |
+| `src/run_pipeline.py` | Glavni ulaz u pipeline |
+| `src/01_camera_calibration/` | Skripte za kalibraciju i pomoćne provjere |
+| `src/02_fruit_pick_and_place/` | Glavna logika pipelinea |
+| `data/camera_calibration/` | Kalibracijske matrice i transformacije |
+| `data/models/` | YOLO modeli |
+| `data/raw/` | Snimljeni i generirani podaci |
 
-## LaTeX predlošci
+## Pokretanje
 
-Dostupni u `.ai/templates/`:
-
-| Predložak | Format | Namjena |
-|---|---|---|
-| `fsb-seminar/` | 12pt, A4 | Seminar za FSB |
-| `fsb-thesis/` | 12pt, A4 | Diplomski rad |
-| `kx-paper/` | 10pt, dva stupca | Znanstveni rad |
-
-## RAG — Citiranje iz izvora
-
-1. Stavi PDF-ove (knjige, skripte, članke) u `data/rag/sources/`.
-2. Pokreni ingestion: `python .ai/rag/ingest.py`
-3. Pretraži: `python .ai/rag/query.py "Tvoje pitanje"`
-
-Agent može koristiti RAG za pronalaženje i citiranje relevantnih izvora u seminaru.
-
-## Kompilacija
+Aktiviraj virtualno okruženje i pokreni glavni pipeline:
 
 ```powershell
-.\.ai\scripts\helpers\build-docs.ps1       # Windows
-./.ai/scripts/helpers/build-docs.sh        # Linux
+.venv\Scripts\activate
+python -X utf8 src\run_pipeline.py
 ```
+
+Za offline rad bez robota i kamere:
+
+```powershell
+python -X utf8 src\run_pipeline.py --offline
+```
+
+Za rad s već snimljenim podacima:
+
+```powershell
+python -X utf8 src\run_pipeline.py --existing-captures data\raw\outputs\run_XXXXX\captures
+```
+
+## Ovisnosti
+
+Osnovne Python ovisnosti su navedene u [requirements.txt](requirements.txt).
+
+## Dokumentacija
+
+- [STATE.md](STATE.md) - trenutno stanje projekta
+- [tasks.md](tasks.md) - sažetak zadataka i što je završeno
+- [howtouse.md](howtouse.md) - detaljnije upute za korištenje
+
+## Napomena
+
+Projekt je reorganiziran tako da su podaci, modeli i kalibracije odvojeni od izvornog koda i smješteni u odgovarajuće direktorije unutar repozitorija.

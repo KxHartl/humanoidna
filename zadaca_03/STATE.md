@@ -1,49 +1,47 @@
 # Stanje projekta
 
-## Trenutni zadatak
-**Zadaća 3:** Interaktivna Pick-and-Place CLI aplikacija za branje voća s UR5e robotom.
+## Projekt
+**Zadaća 3:** interaktivna Pick-and-Place CLI aplikacija za branje voća s UR5e robotom.
 
-## Status
+## Što je završeno
 
-✅ **Integracija voce_zadaca pipeline-a u src/ — ZAVRŠENO**
-- Svi radni moduli iz `voce_zadaca/` kopirani u `src/` bez izmjena.
-- Jedina izmjena: `BASE_DIR` u `src/config.py` → pokazuje na `voce_zadaca/` (za calibration, models, data, output).
-- Kreirana nova interaktivna CLI aplikacija: `src/cli_app.py`.
+| Područje | Status | Napomena |
+|---|---:|---|
+| Reorganizacija repozitorija | Završeno | Uvedena je jasna podjela na `src/` i `data/`. |
+| Glavni pipeline | Završeno | Radna logika je konsolidirana u `src/02_fruit_pick_and_place`. |
+| Kalibracija | Završeno | Kalibracijske datoteke su centralizirane u `data/camera_calibration`. |
+| Modeli | Završeno | YOLO težine su smještene u `data/models`. |
+| Outputi i privremeni podaci | Završeno | Debug i output artefakti idu u `data/raw/outputs`. |
+| Dokumentacija stanja | Završeno | Ovaj dokument odražava trenutno stanje projekta. |
 
-## Struktura
+## Trenutna struktura
 
-```
+```text
 src/
-├── cli_app.py              # ★ NOVA — Interaktivna CLI aplikacija
-├── config.py               # Konfiguracija (BASE_DIR → voce_zadaca/)
-├── io_utils.py             # IO pomoćne funkcije
-├── capture_scene.py        # Snimanje scene (robot + kamera)
-├── segment.py              # YOLO segmentacija voća
-├── reconstruct_scene.py    # 3D rekonstrukcija point clouda
-├── estimate_pick_pose.py   # Estimacija pick poze
-├── trajectory_planner.py   # Planiranje trajektorije (kvintička interpolacija)
-└── ur_executor.py          # Generiranje i slanje URScript programa
+├── run_pipeline.py
+├── 01_camera_calibration/
+└── 02_fruit_pick_and_place/
+
+data/
+├── camera_calibration/
+├── models/
+└── raw/
+	├── captures/
+	└── outputs/
 ```
 
 ## Pokretanje
 
 ```bash
-# Aktiviraj virtualno okruženje
 .venv\Scripts\activate
-
-# Puni mod (robot + kamera)
-python -X utf8 src/cli_app.py
-
-# Offline mod (bez robota i kamere)
-python -X utf8 src/cli_app.py --offline
-
-# Koristi već snimljene podatke
-python -X utf8 src/cli_app.py --existing-captures voce_zadaca/output/run_XXXXX/captures
+python -X utf8 src/run_pipeline.py
+python -X utf8 src/run_pipeline.py --offline
+python -X utf8 src/run_pipeline.py --existing-captures data/raw/outputs/run_XXXXX/captures
 ```
 
-## CLI tok aplikacije
-1. **SNIMANJE** — robot se pomiče u capture poze, kamera se prikazuje uživo, pauza na svakoj poziciji
-2. **DETEKCIJA** — YOLO pronalazi SVE klase voća, prikazuje overlay s maskama i boundingboxevima
-3. **IZBORNIK** — korisnik bira koje voće pokupiti iz tablice detekcija
-4. **REKONSTRUKCIJA + TRAJEKTORIJA** — 3D rekonstrukcija, pick poza, trajektorija + 3D plot
-5. **IZVRŠENJE** — potvrda, slanje URScript programa, real-time praćenje robota
+## Tok rada aplikacije
+1. Snimanje scene iz više pozicija.
+2. YOLO detekcija i lokalizacija voća.
+3. Rekonstrukcija point clouda i izbor ciljnog objekta.
+4. Planiranje pick i place trajektorije.
+5. Izvršenje na robotu uz prikaz i zapis rezultata.

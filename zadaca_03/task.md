@@ -1,16 +1,39 @@
-# Zadaci za rješavanje problema s Pick-and-Place aplikacijom
+# Tasks and Implementation Steps
 
-- `[x]` **Segmentacija i filtracija (PCL)**
-  - Otkriti zašto se izdvaja previše šuma ili krivi klasteri -> Riješeno! Napravljen je `tune_perception.py` alat za Grid Search koji je uspješno pronašao optimalne parametre na temelju metrike preklapanja.
-  - Podesiti parametre `RANSAC` ravnine i `DBSCAN` klasteriranja -> Riješeno automatskim pretraživanjem.
+Ovo je sažeti pregled izvorno planiranih zadataka i onoga što je u ovom repoju stvarno napravljeno.
 
-- `[/]` **Klasifikacija i određivanje objekata (YOLO)**
-  - Otkriti zašto YOLO pronalazi 0 objekata na spremljenoj slici -> Integrirana je robusna logika iz Zadaće 2 (projekcija svih točaka klastera na 2D YOLO pixel-masku).
-  - Provjeriti sprema li se RGB slika iz RealSense kamere ispravno -> Potvrđeno, skripta sada uspješno prepoznaje voće (npr. u testu 15/16/17 YOLO je pronašao do 3 objekta po sceni!).
-  - Podesiti threshold za YOLO ako su detekcije preslabe -> Ugađanje je u tijeku kroz Grid Search.
+## Zadaci koji su završeni
 
-- `[ ]` **Kontrola robota (UR5e)**
-  - Dijagnosticirati zašto se stvarni robot fizički ne pomiče unatoč tome što skripta pošalje naredbu na port 30003 bez greške.
-  - Provjeriti mora li robot biti u izričitom *Remote Control* modu na Teach Pendantu.
-  - Otkriti blokira li možda neka sigurnosna granica (safety plane) izvršenje, jer UR često odbaci skripte ako je zadana točka van sigurnih granica ili bi uzrokovala koliziju.
-  - Riješiti gripper (konfiguracija izlaza DO4 i DO5).
+| Zadatak | Status | Napomena |
+|---|---:|---|
+| Kalibracija TCP-a i eye-in-hand transformacije | Završeno | Kalibracijski fajlovi su premješteni u `data/camera_calibration`. |
+| Snimanje scene i organizacija ulaza | Završeno | Ulazni i izlazni podaci su razdvojeni u `data/raw`. |
+| YOLO + point cloud pipeline | Završeno | Logika je konsolidirana u `src/02_fruit_pick_and_place`. |
+| Planiranje pick-and-place trajektorije | Završeno | Trajektorijski modul je dio glavnog pipelinea. |
+| Izvršenje na UR robotu | Završeno | URScript izvršavanje je uključeno kroz pipeline skripte. |
+| Reorganizacija repozitorija | Završeno | Struktura je pojednostavljena i očišćena od duplikata. |
+
+## Trenutna mapa projekta
+
+| Zona | Svrha |
+|---|---|
+| `src/01_camera_calibration` | Skripte za kalibraciju i pomoćne provjere |
+| `src/02_fruit_pick_and_place` | Glavni pick-and-place pipeline |
+| `data/camera_calibration` | Matrice i transformacije |
+| `data/models` | YOLO modeli |
+| `data/raw` | Snimljeni i generirani podaci |
+
+## Sažetak pipelinea
+
+| Faza | Opis | Ishod |
+|---|---|---|
+| 1 | Kalibracija | Transformacijske matrice |
+| 2 | Snimanje scene | RGB-D ulazi i point cloudovi |
+| 3 | Detekcija i lokalizacija | Identificirani objekti i 3D centri |
+| 4 | Rekonstrukcija i pick točke | Kandidati za pickup |
+| 5 | Trajektorija | Izračun pokreta |
+| 6 | Izvršenje | Slanje komandi robotu |
+
+## Napomena
+
+Originalni dugi plan je zadržan samo kao povijesni opis zadatka; za aktualno stanje pogledaj `STATE.md`.

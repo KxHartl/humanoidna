@@ -1,1 +1,0 @@
-Intel RealSense d435
