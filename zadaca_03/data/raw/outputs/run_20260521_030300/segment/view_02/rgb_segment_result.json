@@ -1,0 +1,9 @@
+{
+  "image_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030300\\captures\\view_02\\rgb.png",
+  "pcd_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030300\\captures\\view_02\\cloud.pcd",
+  "target_class": "Crvena jabuka",
+  "overlay_path": "data\\raw\\outputs\\run_20260521_030300\\segment\\view_02\\rgb_overlay.png",
+  "instances": [],
+  "best_instance_id": null,
+  "best_centroid_camera_xyz": null
+}

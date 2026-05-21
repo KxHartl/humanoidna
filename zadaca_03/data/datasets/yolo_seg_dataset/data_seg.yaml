@@ -1,0 +1,11 @@
+train: D:\truenas_kresimir_share_cp\FSB\semestar_10\humanoidna\zadaca_03\data\datasets\yolo_seg_dataset\images\train
+val: D:\truenas_kresimir_share_cp\FSB\semestar_10\humanoidna\zadaca_03\data\datasets\yolo_seg_dataset\images\valid
+test: D:\truenas_kresimir_share_cp\FSB\semestar_10\humanoidna\zadaca_03\data\datasets\yolo_seg_dataset\images\test
+nc: 6
+names:
+- Crvena Jabuka
+- Zelena Jabuka
+- Limun
+- Banana
+- Orah
+- Naranca

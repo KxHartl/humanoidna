@@ -1,0 +1,74 @@
+{
+    "captures_dir": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures",
+    "required_views": 3,
+    "views_captured": 3,
+    "pairs": [
+        [
+            "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00\\rgb.png",
+            "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00\\cloud.pcd"
+        ],
+        [
+            "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01\\rgb.png",
+            "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01\\cloud.pcd"
+        ],
+        [
+            "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02\\rgb.png",
+            "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02\\cloud.pcd"
+        ]
+    ],
+    "base_tcp_transform_paths": [
+        "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00\\T_base_tcp.npy",
+        "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01\\T_base_tcp.npy",
+        "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02\\T_base_tcp.npy"
+    ],
+    "view_results": [
+        {
+            "view_index": 0,
+            "view_dir": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00",
+            "rgb_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00\\rgb.png",
+            "pcd_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00\\cloud.pcd",
+            "depth_npy_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00\\depth_m.npy",
+            "tcp_pose_base": [
+                -0.3259063483085737,
+                0.1092253040819436,
+                0.36272793428850153,
+                -2.9855275081020265,
+                -0.6063881371042456,
+                0.3304196828575456
+            ],
+            "t_base_tcp_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_00\\T_base_tcp.npy"
+        },
+        {
+            "view_index": 1,
+            "view_dir": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01",
+            "rgb_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01\\rgb.png",
+            "pcd_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01\\cloud.pcd",
+            "depth_npy_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01\\depth_m.npy",
+            "tcp_pose_base": [
+                -0.4241652748014275,
+                0.1775812103555211,
+                0.2537934526573854,
+                -1.546613629949281,
+                -2.431278292536358,
+                0.060178362138049335
+            ],
+            "t_base_tcp_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_01\\T_base_tcp.npy"
+        },
+        {
+            "view_index": 2,
+            "view_dir": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02",
+            "rgb_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02\\rgb.png",
+            "pcd_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02\\cloud.pcd",
+            "depth_npy_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02\\depth_m.npy",
+            "tcp_pose_base": [
+                -0.5370060645846636,
+                0.18369839031979693,
+                0.26299184876851717,
+                0.2980328214056242,
+                -2.9650132609978863,
+                -0.26501190697436555
+            ],
+            "t_base_tcp_path": "d:/truenas_kresimir_share_cp/FSB/semestar_10/humanoidna/zadaca_03/data/raw/outputs\\run_20260521_030359\\captures\\view_02\\T_base_tcp.npy"
+        }
+    ]
+}

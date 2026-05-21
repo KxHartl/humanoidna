@@ -1,0 +1,74 @@
+{
+  "image_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030300\\captures\\view_02\\rgb.png",
+  "pcd_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030300\\captures\\view_02\\cloud.pcd",
+  "target_class": "orange",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_201754\\segment\\view_02\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "orange",
+      "confidence": 0.39896219968795776,
+      "bbox_xyxy": [
+        69,
+        342,
+        143,
+        411
+      ],
+      "mask_area_px": 3685,
+      "num_points_raw": 3685,
+      "num_points_clean": 3536,
+      "centroid_camera_xyz": [
+        -0.15023683040609323,
+        0.08931998448968945,
+        0.41132863857930874
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_201754\\segment\\view_02\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "orange",
+      "confidence": 0.26151376962661743,
+      "bbox_xyxy": [
+        225,
+        330,
+        292,
+        397
+      ],
+      "mask_area_px": 3204,
+      "num_points_raw": 3204,
+      "num_points_clean": 3085,
+      "centroid_camera_xyz": [
+        -0.04765784904252092,
+        0.0811582847994962,
+        0.41130245070982985
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_201754\\segment\\view_02\\rgb_instance_01.pcd"
+    },
+    {
+      "instance_id": 2,
+      "class_name": "orange",
+      "confidence": 0.1851644665002823,
+      "bbox_xyxy": [
+        361,
+        304,
+        426,
+        365
+      ],
+      "mask_area_px": 2630,
+      "num_points_raw": 2630,
+      "num_points_clean": 2541,
+      "centroid_camera_xyz": [
+        0.0456451222451535,
+        0.0628835991470657,
+        0.4326544853469041
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_201754\\segment\\view_02\\rgb_instance_02.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    -0.15023683040609323,
+    0.08931998448968945,
+    0.41132863857930874
+  ]
+}

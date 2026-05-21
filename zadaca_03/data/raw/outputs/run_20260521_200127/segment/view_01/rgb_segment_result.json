@@ -1,0 +1,54 @@
+{
+  "image_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030359\\captures\\view_01\\rgb.png",
+  "pcd_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030359\\captures\\view_01\\cloud.pcd",
+  "target_class": "person",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_200127\\segment\\view_01\\rgb_overlay.png",
+  "instances": [
+    {
+      "instance_id": 0,
+      "class_name": "person",
+      "confidence": 0.6407363414764404,
+      "bbox_xyxy": [
+        325,
+        356,
+        605,
+        479
+      ],
+      "mask_area_px": 2426,
+      "num_points_raw": 2426,
+      "num_points_clean": 2354,
+      "centroid_camera_xyz": [
+        0.042053667550903374,
+        0.07362134886641268,
+        0.2671431718788212
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_200127\\segment\\view_01\\rgb_instance_00.pcd"
+    },
+    {
+      "instance_id": 1,
+      "class_name": "person",
+      "confidence": 0.10994680970907211,
+      "bbox_xyxy": [
+        525,
+        354,
+        603,
+        479
+      ],
+      "mask_area_px": 833,
+      "num_points_raw": 833,
+      "num_points_clean": 809,
+      "centroid_camera_xyz": [
+        0.0829822023494724,
+        0.05167475351960167,
+        0.2230642837632277
+      ],
+      "segmented_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_200127\\segment\\view_01\\rgb_instance_01.pcd"
+    }
+  ],
+  "best_instance_id": 0,
+  "best_centroid_camera_xyz": [
+    0.042053667550903374,
+    0.07362134886641268,
+    0.2671431718788212
+  ]
+}

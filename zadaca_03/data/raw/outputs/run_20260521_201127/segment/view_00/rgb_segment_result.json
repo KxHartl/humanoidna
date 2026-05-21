@@ -1,0 +1,9 @@
+{
+  "image_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030359\\captures\\view_00\\rgb.png",
+  "pcd_path": "d:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_030359\\captures\\view_00\\cloud.pcd",
+  "target_class": "person",
+  "overlay_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_201127\\segment\\view_00\\rgb_overlay.png",
+  "instances": [],
+  "best_instance_id": null,
+  "best_centroid_camera_xyz": null
+}

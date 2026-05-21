@@ -1,0 +1,77 @@
+{
+  "target_class": "person",
+  "views_used": 3,
+  "instances": [
+    {
+      "instance_id": 0,
+      "centroid_base_xyz": [
+        -0.2760457792556365,
+        0.15779634385109545,
+        0.03769811471379571
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\instance_00.pcd",
+      "num_points": 120
+    },
+    {
+      "instance_id": 1,
+      "centroid_base_xyz": [
+        -0.418244325972784,
+        0.10764296064576132,
+        0.07914614170151103
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\instance_01.pcd",
+      "num_points": 129
+    },
+    {
+      "instance_id": 2,
+      "centroid_base_xyz": [
+        -0.3832612710761154,
+        0.0419753571781322,
+        0.02157768055799232
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\instance_02.pcd",
+      "num_points": 170
+    },
+    {
+      "instance_id": 3,
+      "centroid_base_xyz": [
+        -0.3842234343340182,
+        0.16260528122074394,
+        0.17877258041699884
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\instance_03.pcd",
+      "num_points": 122
+    },
+    {
+      "instance_id": 4,
+      "centroid_base_xyz": [
+        -0.320114478817774,
+        0.30498962985849737,
+        0.03799619785283254
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\instance_04.pcd",
+      "num_points": 309
+    },
+    {
+      "instance_id": 5,
+      "centroid_base_xyz": [
+        -0.37077956547295166,
+        0.28751619361257064,
+        0.3268542624473329
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\instance_05.pcd",
+      "num_points": 99
+    },
+    {
+      "instance_id": 6,
+      "centroid_base_xyz": [
+        -0.5627520697348125,
+        0.1194156562229557,
+        0.3461495678488813
+      ],
+      "pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\instance_06.pcd",
+      "num_points": 93
+    }
+  ],
+  "global_pcd_path": "D:\\truenas_kresimir_share_cp\\FSB\\semestar_10\\humanoidna\\zadaca_03\\data\\raw\\outputs\\run_20260521_195414\\reconstruct\\global_merged.pcd"
+}
