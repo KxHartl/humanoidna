@@ -9,7 +9,7 @@ K = np.load("camera_matrix.npy")
 T_cam_from_tcp = np.load("T_cam_from_tcp.npy")   # TCP -> kamera
 
 # Define robot network connection settings
-ROBOT_HOST = "192.168.40.171"  # UR5e robot IP
+ROBOT_HOST = "192.168.40.10"  # UR5e robot IP
 ROBOT_PORT = 30002
 
 clicked_point = None
@@ -60,8 +60,6 @@ def tcp_to_4x4(tcp):
     T[:3, 3] = [x, y, z]
 
     return T
-
-
 def pixel_depth_to_base(u, v, depth_m, T_base_tcp):
     fx = K[0, 0]
     fy = K[1, 1]
@@ -75,7 +73,7 @@ def pixel_depth_to_base(u, v, depth_m, T_base_tcp):
 
     p_cam = np.array([Xc, Yc, Zc, 1.0])
 
-    # baza -> kamera
+    # baza -> kamera (TCP -> kamera je T_cam_from_tcp)
     T_base_cam = T_base_tcp @ T_cam_from_tcp
 
     # kamera -> baza

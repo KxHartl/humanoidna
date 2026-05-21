@@ -1,0 +1,17 @@
+names:
+- Banana
+- Crvena jabuka
+- Limun
+- Naranca
+- Orah
+- Zelena jabuka
+nc: 6
+path: d:\truenas_kresimir_share_cp\FSB\semestar_10\humanoidna\zadaca_02\datasets\humanoidna_voce_sve_v3.yolov8
+roboflow:
+  license: Private
+  project: vjebacrta
+  url: https://app.roboflow.com/vjebacrta/vjebacrta/dataset
+  version: dataset
+  workspace: vjebacrta
+train: train/images
+val: train/images

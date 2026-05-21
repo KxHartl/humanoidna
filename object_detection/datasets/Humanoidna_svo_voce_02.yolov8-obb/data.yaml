@@ -1,0 +1,14 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 8
+names:
+  0: red apple
+  1: green apple
+  2: lemon
+  3: banana
+  4: avocado
+  5: walnut
+  6: pear
+  7: orange

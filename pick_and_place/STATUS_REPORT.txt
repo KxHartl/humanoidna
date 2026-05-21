@@ -1,0 +1,457 @@
+═══════════════════════════════════════════════════════════════════════════════
+                  ZAVRŠNA ANALIZA - VJEZBA TRAJEKTORIJA → PICK AND PLACE
+═══════════════════════════════════════════════════════════════════════════════
+
+DATUM: 2026-05-20
+PROJEKT: Humanoidna Robotika - Autonomna Hvatanja i Odlaganja
+
+═══════════════════════════════════════════════════════════════════════════════
+1. ANALIZA VJEZBE TRAJEKTORIJA
+═══════════════════════════════════════════════════════════════════════════════
+
+CILJ VJEZBE:
+  Naučiti geneiriranje i slanje trajektorija za UR robota u zglobnom i task
+  prostoru.
+
+ŠTA JE KREIRANO U VJEZBI:
+
+  Zadatak 1: Polinom prvog reda
+    ✓ Jednostavna linearna interpolacija
+    ✓ Bez razmatranja ograničenja
+
+  Zadatak 2: Polinom 5. reda (Quintic)
+    ✓ Glatke trajektorije s kontinuiranom brzinom i akceleracijom
+    ✓ Učitava početnu i konačnu konfiguraciju
+    ✓ Primjenjuje ograničenja (brzina, akceleracija, omega)
+    ✓ Diskretizacija: 1000 točaka
+    ✓ Output: Grafovi i datoteke s trajektorijama
+
+  Zadatak 3: Task Space trajektorije
+    ✓ Trajektorije definirane u task space-u (x, y, z, orijentacija)
+    ✓ SLERP za interpolaciju orijentacije
+    ✓ Konverzija između task i joint space-a
+    ✓ Primjer 3D putanje TCP-a
+
+  Zadatak 4: (Specijalizirana obrada - nije dostupna)
+    - Task space transformacije u detaljima
+
+  Zadatak 5: Slanje trajektorija robotu
+    ✓ TCP/IP komunikacija s UR robotom
+    ✓ Čitanje .txt datoteka s trajektorijama (URScript format)
+    ✓ Real-time slanje servoj naredbi
+    ✓ Simulacija u PolyScope-u
+
+KEY OUTPUTS VJEZBE:
+  • trajectory.txt - Trajektorija u zglobnom prostoru
+  • trajectory_fifth_order.txt - Quintic polinom verzija
+  • trajectory_task_space.txt - Trajektorija u task space-u
+  • Vizualizacijske slike (pozicija, brzina, akceleracija)
+
+KLJUČNE TEHNIKE:
+  • Quintic (5. red) interpolacija
+  • SLERP (Spherical Linear Interpolation) za rotacije
+  • Procjena minimalnog vremena trajanja
+  • Validacija ograničenja robota (v_max, a_max, omega_max)
+
+═══════════════════════════════════════════════════════════════════════════════
+2. PICK AND PLACE ZADATAK - NOVI ZAHTJEVI
+═══════════════════════════════════════════════════════════════════════════════
+
+CILJ ZADATKA:
+  Autonomna hvatanja i odlaganja objekta s primjenom svih prethodnih znanja
+  i tehnike.
+
+5 OBAVEZNIH TOČAKA TRAJEKTORIJE:
+──────────────────────────────────
+
+  1. HOME
+     ├─ Početna sigurna pozicija
+     ├─ Joint konfiguracija [q1, q2, q3, q4, q5, q6]
+     └─ Definirana u zglobnom (joint) prostoru
+
+  2. APPROACH
+     ├─ Iznad objekta (100mm offset po Z od PICK)
+     ├─ Task space (x, y, z+0.1, rx, ry, rz)
+     ├─ Sigurna pozicija prije hvatanja
+     └─ Izračunava se automatski
+
+  3. PICK
+     ├─ Točka hvatanja objekta
+     ├─ Iz Point Cloud obrade (ZADAĆA 3!)
+     ├─ Task space koordinate u robot sustavu
+     └─ Kalibrirana iz 3D lokalizacije
+
+  4. APPROACH_PLACE
+     ├─ Iznad mjesta odlaganja (100mm offset po Z od PLACE)
+     ├─ Task space (x, y, z+0.1, rx, ry, rz)
+     ├─ Sigurna pozicija prije odlaganja
+     └─ Izračunava se automatski
+
+  5. PLACE
+     ├─ Točka odlaganja objekta
+     ├─ Fiksna ili definiram po zadatku
+     ├─ Task space koordinate
+     └─ Poznata unaprijed
+
+DEFINICIJA TRAJEKTORIJE:
+────────────────────────
+
+  Format:                    Task space (6D vektor)
+  Kretnje između točaka:    Direktne (bez blend-a radijusa)
+  Diskretizacija:          Fina (min 100+ točaka po segmentu)
+  Robot kontrola:          Low-level regulacija + praćenje
+  Interpolacija:           Quintic (5. red polinom)
+  Glatkoća:                Kontinuirana brzina i akceleracija
+
+OGRANIČENJA KOJA TREBAJU BITI POŠTOVANA:
+──────────────────────────────────────────
+
+  • v_max = 0.5 m/s (translacijska brzina)
+  • a_max = 1.0 m/s² (translacijska akceleracija)
+  • omega_max = 1.0 rad/s (kutna brzina)
+  • q_dot_max = 360°/s (brzina zglobova)
+  • q_ddot_max = 360-720°/s² (akceleracija zglobova)
+  • Workspace ograničenja (x, y, z ranges)
+  • Izbjegavanje singulariteta
+
+OFFSET DEFINICIJA:
+───────────────────
+
+  APPROACH = PICK + [0, 0, 0.1]        # 100mm iznad objekta
+  APPROACH_PLACE = PLACE + [0, 0, 0.1] # 100mm iznad mjesta
+
+IMPLEMENTACIJSKA STRUKTURA:
+─────────────────────────────
+
+  7 SEGMENATA TRAJEKTORIJE (bez blendinga):
+  
+  1. HOME → APPROACH
+     └─ Primjeri gorivo u položaj prije hvatanja
+  
+  2. APPROACH → PICK
+     └─ Desno spuštanja prema objektu
+  
+  3. PICK (pause)
+     └─ Vrijeme za zahvaćanje (gripper zatvoren)
+  
+  4. PICK → APPROACH_PLACE
+     └─ Brzo dizanja iz PICK pozicije
+  
+  5. APPROACH_PLACE → PLACE
+     └─ Desno spuštanja prema mjestu odlaganja
+  
+  6. PLACE (pause)
+     └─ Vrijeme za otpuštanje (gripper otvoren)
+  
+  7. PLACE → HOME
+     └─ Povratak u početnu poziciju
+
+═══════════════════════════════════════════════════════════════════════════════
+3. KREIRANE DATOTEKE ZA PICK AND PLACE
+═══════════════════════════════════════════════════════════════════════════════
+
+📂 for_pick_and_place/
+
+SKRIPTE (u scripts/):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ 01_generate_pick_place_trajectory.py (~12 KB)
+  ├─ Klasa: ReferencePointsManager
+  │  ├─ set_home() - postavi početnu poziciju
+  │  ├─ set_pick_from_point_cloud() - učitaj iz zadaće 3
+  │  ├─ set_place() - postavi mjesto odlaganja
+  │  ├─ compute_approach_points() - izračunaj offset točke
+  │  ├─ get_point() / get_all_points() - dohvati točke
+  │  └─ save_to_json() / load_from_json() - perzistencija
+  │
+  └─ Klasa: TrajectoryPlanner
+     ├─ quintic_interpolation() - 5. red polinom
+     ├─ generate_pick_and_place_trajectory() - kompletan slijed
+     └─ save_trajectory_to_file() - ispis u datoteku
+
+✓ 02_robot_communication.py (~9.7 KB)
+  ├─ Klasa: URRobotCommunication
+  │  ├─ connect() - TCP/IP konekcija
+  │  ├─ disconnect() - prekini vezu
+  │  ├─ send_command() - URScript komanda
+  │  ├─ send_trajectory_as_servoj() - slanje trajektorije
+  │  ├─ generate_urscript_program() - generiraj kompletan program
+  │  └─ send_trajectory_from_file() - učitaj i pošalji
+  │
+  └─ Funkcija: simulate_robot_execution()
+     └─ Simulacija izvršenja (bez robota)
+
+✓ 05_quintic_interpolation_reference.py
+  └─ Referenca iz vjezbe (polinom 5. reda)
+
+✓ 06_task_space_reference.py
+  └─ Referenca iz vjezbe (task space trajektorije)
+
+✓ 07_send_trajectory_reference.py
+  └─ Referenca iz vjezbe (slanje na robota)
+
+REFERENCE TOČKE (u reference_points/):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ example_reference_points.json (~2.1 KB)
+  ├─ HOME - početna pozicija
+  ├─ APPROACH - 100mm iznad objekta
+  ├─ PICK - iz point cloud obrade
+  ├─ APPROACH_PLACE - 100mm iznad mjesta
+  ├─ PLACE - mjesto odlaganja
+  └─ TRAJECTORY_PARAMETERS - konfiguracija
+
+TRAJEKTORIJE (u trajectories/):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Generirane datoteke (`.txt` format):
+  • trajectory_HOME_to_APPROACH.txt
+  • trajectory_APPROACH_to_PICK.txt
+  • trajectory_PICK_to_APPROACH_PLACE.txt
+  • trajectory_APPROACH_PLACE_to_PLACE.txt
+  • trajectory_PLACE_to_HOME.txt
+  • example_fifth_order.txt (iz vjezbe)
+
+Svaka datoteka sadrži:
+  - N redaka (diskretne točke)
+  - 6 stupnjeva slobode po redu
+  - Format: t q1 q2 q3 q4 q5 q6
+
+DOKUMENTACIJA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ README.md (~8.9 KB)
+  ├─ Pregled i brzi start
+  ├─ Struktura foldera
+  ├─ Primjeri korištenja
+  ├─ Ključne komponente
+  ├─ Integracija s prethodnim zadacima
+  ├─ Konfiguracija
+  └─ Troubleshooting
+
+✓ ANALIZA_VJEZBE_I_ZADATKA.md (~9.6 KB)
+  ├─ Što je bilo u vjezbi
+  ├─ Što je trebalo za pick and place
+  ├─ Svi prebačeni fajlovi
+  ├─ Implementacijski plan
+  ├─ Primjer kod strukture
+  └─ Važne napomene
+
+✓ datasheets/
+  └─ UR specifikacije (iz vjezbe)
+
+OUTPUT FOLDER:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Gdje se sprema:
+  • generated_trajectories.zip - sve trajektorije
+  • reference_points.json - korištene točke
+  • simulated_execution.log - simulacijski rezultati
+  • robot_execution.log - pravi rezultati (ako je izvršeno)
+  • visualization plots - slike trajektorija
+
+═══════════════════════════════════════════════════════════════════════════════
+4. INTEGRACIJA S PRETHODNIM ZADACIMA
+═══════════════════════════════════════════════════════════════════════════════
+
+TIJEK PODATAKA:
+────────────────
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ ZADAĆA 2: YOLO DETEKCIJA                                            │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Detektira voće u sceni                                            │
+│ • Output: Bounding boxovi i segmentation maske                      │
+└─────────────────────────────────────────────────────────────────────┘
+                                  ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ ZADAĆA 3: POINT CLOUD OBRADA & 3D LOKALIZACIJA                     │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Snimanje scene (3 point clouda)                                   │
+│ • Obrada: Filtriranje, downsampling, registration                  │
+│ • Segmentacija voća u 3D                                            │
+│ • DOHVAT: 3D koordinate objekta u robot sustavu (PICK točka!)       │
+│ • Output: [x_pick, y_pick, z_pick, rx, ry, rz]                    │
+└─────────────────────────────────────────────────────────────────────┘
+                                  ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ VJEZBA TRAJEKTORIJA: TEHNIKE GENEIRIRANJA                           │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Quintic (5. red) interpolacija                                    │
+│ • Task space trajektorije                                           │
+│ • Validacija ograničenja                                            │
+│ • Diskretizacija i praćenje                                         │
+└─────────────────────────────────────────────────────────────────────┘
+                                  ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ PICK AND PLACE: FINALNI PROJEKT                                    │
+├─────────────────────────────────────────────────────────────────────┤
+│ 1. Učitaj PICK iz zadaće 3                                          │
+│ 2. Definiraj HOME, PLACE                                            │
+│ 3. Izračunaj APPROACH točke                                         │
+│ 4. Generiraj 5 segmentnih trajektorija                              │
+│ 5. Primijeni quintic interpolaciju                                  │
+│ 6. Validiraj ograničenja                                            │
+│ 7. Pošalji na robota (TCP/IP)                                       │
+│ 8. Autonomna izvršenja!                                             │
+└─────────────────────────────────────────────────────────────────────┘
+                                  ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ ROBOTSKA IZVRŠENJA: AUTONOMNA HVATANJA I ODLAGANJA                 │
+├─────────────────────────────────────────────────────────────────────┤
+│ • UR robot izvršava trajektorije                                    │
+│ • Real-time feedback i monitoring                                   │
+│ • Gripper kontrola                                                  │
+│ • Sigurna manipulacija objekta                                      │
+└─────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+5. KAKO POČETI
+═══════════════════════════════════════════════════════════════════════════════
+
+KORAK 1: Instaliraj dependencije
+─────────────────────────────────
+  cd D:\truenas_kresimir_share_cp\FSB\semestar_10\humanoidna\for_pick_and_place
+  pip install -r requirements_pick_place.txt
+
+KORAK 2: Testiraj sa primjerom
+──────────────────────────────
+  python scripts/01_generate_pick_place_trajectory.py
+
+KORAK 3: Učitaj PICK koordinate iz zadaće 3
+────────────────────────────────────────────
+  Kreiraj JSON datoteku s 5 referentnih točaka
+
+KORAK 4: Generiraj trajektorije
+────────────────────────────────
+  python scripts/01_generate_pick_place_trajectory.py
+
+KORAK 5: Testiraj komunikaciju s robotom
+─────────────────────────────────────────
+  python scripts/02_robot_communication.py
+
+KORAK 6: Pokretanje na pravi robot
+──────────────────────────────────
+  • Provjeri IP i port robota
+  • Simulacija u PolyScope-u
+  • Real-time slanje servoj naredbi
+
+═══════════════════════════════════════════════════════════════════════════════
+6. OČEKIVANI OUTPUT
+═══════════════════════════════════════════════════════════════════════════════
+
+REFERENCE TOČKE (JSON):
+──────────────────────
+{
+  "HOME": [-1.571, -2.094, -1.571, 0.524, 1.571, 0.000],
+  "APPROACH": [0.3, 0.2, 0.6, 3.14159, 0.0, 0.0],
+  "PICK": [0.3, 0.2, 0.5, 3.14159, 0.0, 0.0],
+  "APPROACH_PLACE": [0.2, 0.4, 0.6, 3.14159, 0.0, 0.0],
+  "PLACE": [0.2, 0.4, 0.5, 3.14159, 0.0, 0.0]
+}
+
+TRAJEKTNE DATOTEKE (TXT):
+────────────────────────
+trajectory_HOME_to_APPROACH.txt:
+  0.000    -1.5708  -2.0944  -1.5708   0.5236   1.5708   0.0000
+  0.002    -1.5651  -2.0952  -1.5704   0.5248   1.5708   0.0009
+  0.004    -1.5594  -2.0960  -1.5700   0.5260   1.5708   0.0018
+  ...
+
+VIZUALIZACIJE:
+──────────────
+  • 3D plot putanje TCP-a s 5 ključnih točaka
+  • Grafovi: pozicija, brzina, akceleracija
+  • Validacija ograničenja i prostora
+
+SIMULACIJSKI LOG:
+─────────────────
+SIMULACIJA IZVRŠENJA TRAJEKTORIJE
+Vrijeme: 2026-05-20 11:54:10
+Broj točaka: 500
+
+Izvršavanje:
+   0: [-1.5708, -2.0944, -1.5708,  0.5236,  1.5708,  0.0000]
+   1: [-1.5651, -2.0952, -1.5704,  0.5248,  1.5708,  0.0009]
+   ...
+ 499: [-0.7854, -2.0944,  0.0000, -1.5708,  0.0000,  0.0000]
+
+✓ Simulacija završena!
+
+═══════════════════════════════════════════════════════════════════════════════
+7. ŠTA JE TREBALO NAPRAVITI - STATUS ✅
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ GOTOVO:
+  ✓ Kreiram folder for_pick_and_place
+  ✓ Analiziram vjezbu_trajektorija
+  ✓ Prebačem relevantne skripte i datoteke
+  ✓ Kreiram ReferencePointsManager klasu
+    - set_home(), set_pick_from_point_cloud(), set_place()
+    - compute_approach_points() - automatska kalkulacija offset-a
+    - save/load JSON za persistenciju
+  ✓ Kreiram TrajectoryPlanner klasu
+    - quintic_interpolation() - 5. red polinom
+    - generate_pick_and_place_trajectory() - 5 segmenata
+    - save_trajectory_to_file() - ispis u format za robota
+  ✓ Kreiram URRobotCommunication klasu
+    - connect/disconnect - TCP/IP
+    - send_command() - URScript naredbe
+    - send_trajectory_as_servoj() - slanje sa servoj
+    - send_trajectory_from_file() - učitaj i pošalji
+    - simulate_robot_execution() - simulacija
+  ✓ Prebačem reference skripte iz vjezbe
+  ✓ Kreiram requirements_pick_place.txt
+  ✓ Kreiram example_reference_points.json
+  ✓ Kreiram README.md s instrukcijama
+  ✓ Kreiram ANALIZA_VJEZBE_I_ZADATKA.md
+  ✓ Kreiram ovaj STATUS_REPORT.txt
+
+═══════════════════════════════════════════════════════════════════════════════
+8. SLJEDEĆI KORACI - ZA STUDENTA
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Testiraj sa primjerom:
+   python scripts/01_generate_pick_place_trajectory.py
+
+2. Učitaj PICK koordinate iz zadaće 3:
+   - Provjeri točnost 3D lokalizacije
+   - Validiraj da je u robot sustavu
+
+3. Definiraj HOME i PLACE točke:
+   - HOME: Sigurna pozicija (joint space)
+   - PLACE: Mjesto odlaganja (task space)
+
+4. Generiraj sve 5 segmentnih trajektorija:
+   - Korak po korak primjer u README.md
+
+5. Testiraj na simulatoru:
+   - PolyScope (UR simulator)
+   - Provjera ograničenja i glatkoće
+
+6. Pošalji na pravi robot:
+   - TCP/IP konekcija
+   - Real-time slanje servoj naredbi
+   - Sigurna manipulacija
+
+═══════════════════════════════════════════════════════════════════════════════
+9. VAŽNE NAPOMENE
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️  NEMA BLENDINGA - Robot mora prolaziti kroz sve 5 točaka
+⚠️  DISKRETIZACIJA - Min 100+ točaka po segmentu (fina)
+⚠️  OGRANIČENJA - Brzine, akceleracije, workspace moraju biti validira
+⚠️  SIGURNOST - APPROACH točka: min 100mm prije objekta
+⚠️  KOORDINATI SUSTAVI - Paziti na transformacije
+⚠️  QUATERNIONI - SLERP za smooth rotacije
+⚠️  TIMING - Pravilno dimenzioniranje vremenske diskretizacije
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Kreirano: 2026-05-20
+
+Za više informacija, vidi:
+- README.md - Detaljne instrukcije
+- ANALIZA_VJEZBE_I_ZADATKA.md - Što je trebalo
+
+═══════════════════════════════════════════════════════════════════════════════

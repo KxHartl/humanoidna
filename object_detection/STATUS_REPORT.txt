@@ -1,0 +1,371 @@
+═══════════════════════════════════════════════════════════════════════════════
+                  ZAVRŠNA ANALIZA - ZADACA 2 → ZADACA 3
+═══════════════════════════════════════════════════════════════════════════════
+
+DATUM: 2026-05-20
+STUDENT: [Humanoidna Robotika - Seminarski rad]
+
+═══════════════════════════════════════════════════════════════════════════════
+1. ANALIZA ZADACE 2
+═══════════════════════════════════════════════════════════════════════════════
+
+CILJ ZADACE 2:
+  Priučiti YOLO model na detekciju i segmentaciju 3D printanog voća u scenama.
+
+ŠTA JE KREIRANO:
+  ✓ YOLO treninig pipeline (train_yolo_fruit_seg.py)
+  ✓ YOLOv8 nano segmentation model obučen na 7 klasa voća
+  ✓ Prediktivni kod (predict_on_images.py)
+  ✓ Evaluacijske metrike (confusion matrix, precision, recall, accuracy)
+  ✓ 3 različita dataseta:
+    - Humanoidna_svo_voce_02.yolov8-obb (OBB format)
+    - humanoidna_voce_sve_v3.yolov8
+    - humanoidna_voce_crvena_jabuka.yolov8
+  ✓ Vizualizacijske skripte (generate_3d_viz.py)
+
+KEY OUTPUTS IZ ZADACE 2:
+  • yolo26n.pt - Pretreniran model
+  • yolo26n-seg.pt - Segmentation model  
+  • yolo26n_trained.pt - Obučeni model iz zadace 2
+  • yolo26n-seg_trained.pt - Obučeni segmentation model
+  • Classes mappings za 7 tipova voća
+  • Evaluacijske metrike i grafovi
+  • Training logs i checkpoints
+
+═══════════════════════════════════════════════════════════════════════════════
+2. ANALIZA ZADACE 3
+═══════════════════════════════════════════════════════════════════════════════
+
+CILJ ZADACE 3:
+  Kompletan pipeline za Point Cloud obradu i 3D lokalizaciju objekta u sceni.
+
+SPECIFIČNI ZAHTJEVI:
+
+  A) SNIMANJE SCENE
+     ✓ Snimiti minimalno 3 point clouda iste scene
+     ✓ Različite pozicije kamere/robota
+     ✓ Scena sadrži 7 tipova voća (po jedan od svake klase)
+     ✓ Eksport u .pcd ili .ply format
+
+  B) OBRADA POINT CLOUD-a (PCL Pipeline)
+     Obavezni koraci:
+     ✓ PassThrough Filtering - uklanjanje točaka van ROI-a
+     ✓ Statistical Outlier Removal - uklanjanje anomalnih točaka
+     ✓ VoxelGrid Downsampling - smanjenje broja točaka
+     ✓ ICP Registration - usklađivanje cloud-a
+     ✓ Point Cloud Stitching/Fusion - spajanje u jedan cloud
+     ✓ Euclidean Clustering - segmentacija objekata
+     ✓ RANSAC Plane Segmentation - detekcija planarnih površina
+     
+     OUTPUT: Jedan konačni registrirani point cloud scene
+
+  C) DETEKCIJA I LOKALIZACIJA OBJEKTA
+     Za zadani objekt (student ima definirani tip voća):
+     ✓ Segmentacija objekta iz scene
+     ✓ Pronalaženje centra masa (3D centroid)
+     ✓ 3D lokalizacija u koordinatnom sustavu kamere
+     ✓ Transformacija u koordinatni sustav baze robota
+
+═══════════════════════════════════════════════════════════════════════════════
+3. KREIRANE DATOTEKE ZA ZADACU 3
+═══════════════════════════════════════════════════════════════════════════════
+
+📂 for_zadaca_03/
+
+SKRIPTE (7 fajlova u scripts/):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. capture_point_clouds.py (~9.7 KB)
+   ├─ Modul za snimanje point cloudova
+   ├─ Klasa: PointCloudCapture
+   ├─ Metode:
+   │  • capture_from_realsense() - snimanje s Intel RealSense
+   │  • capture_from_synthetic() - sintetički test clouds
+   │  • capture_multiple_positions() - snimanje iz 3+ pozicija
+   │  • save_pointcloud() - sprema u .pcd/.ply format
+   └─ Testiran: DA (sa sintetičkim podacima)
+
+2. pcl_processing.py (~16.3 KB)
+   ├─ Kompletan PCL pipeline
+   ├─ Klasa: PointCloudProcessor
+   ├─ Metode implementirane:
+   │  • passthrough_filter() - filtriranje po osi
+   │  • statistical_outlier_removal() - SOR filter
+   │  • voxel_grid_downsampling() - downsampling
+   │  • estimate_normals() - procjena normala
+   │  • icp_registration() - ICP registracija
+   │  • register_and_merge_clouds() - spajanje cloudova
+   │  • euclidean_clustering() - clustering
+   │  • extract_clusters() - ekstraktovanje clustera
+   │  • ransac_plane_segmentation() - RANSAC
+   │  • process_point_cloud() - kompletan pipeline
+   └─ Testiran: DA
+
+3. object_detection_3d.py (~16.1 KB)
+   ├─ Detekcija i lokalizacija objekta
+   ├─ Klasa: ObjectDetectionAndLocalization
+   ├─ Metode:
+   │  • segment_by_color() - HSV boja segmentacija
+   │  • segment_by_size() - filtriranje po veličini
+   │  • segment_by_shape() - segmentacija po obliku
+   │  • find_centroid() - pronalaženje centra masa
+   │  • find_bounding_box() - bounding box
+   │  • compute_principal_axes() - PCA analiza
+   │  • localize_in_camera_frame() - 3D u kamerom sustavu
+   │  • transform_to_robot_frame() - transformacija u robot sustav
+   │  • detect_and_localize_object() - kompletan pipeline
+   │  • Helper metode za transformacije (rotation matrices, itd.)
+   └─ Testiran: DA
+
+4. run_full_pipeline.py (~9.6 KB)
+   ├─ Integracija svih modula
+   ├─ Klasa: TaskaPipeline
+   ├─ Koraci:
+   │  1. step1_capture_point_clouds() - snimanje
+   │  2. step2_process_point_clouds() - obrada svakog clouda
+   │  3. step3_register_and_merge() - registracija i spajanje
+   │  4. step4_cluster_objects() - clustering
+   │  5. step5_detect_target_object() - detekcija objekta
+   ├─ Primjeri korištenja
+   └─ Testiran: DA (sa sintetičkim podacima)
+
+5. predict_on_images.py (prebačeno iz zadace 2)
+   └─ Referenca za YOLO inference
+
+6. generate_3d_viz_reference.py (prebačeno iz zadace 2)
+   └─ Referenca za 3D vizualizaciju
+
+7. evaluate_model_reference.py (prebačeno iz zadace 2)
+   └─ Referenca za evaluaciju modela
+
+MODELI (u models/):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• yolo26n.pt - Pretreniran model (od Ultralytics)
+• yolov8n-seg.pt - Pretreniran segmentation model
+• yolo26n_trained.pt - Model obučen u zadaci 2
+• yolo26n-seg_trained.pt - Segmentation obučen u zadaci 2
+
+DATASETI (u datasets/):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Humanoidna_svo_voce_02.yolov8-obb/ - 7 klasa voća (OBB format)
+• humanoidna_voce_sve_v3.yolov8/ - Alternativni dataset
+• humanoidna_voce_crvena_jabuka.yolov8/ - Red apple specific
+• humanoidna_voce_crvena_jabuka_raw/ - Raw verzija
+• classes/ - Class mappings
+
+DOKUMENTACIJA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• README.md (~11.9 KB)
+  ├─ Pregled zadace
+  ├─ Brzi start instrukcije
+  ├─ Detaljni opis svakog modula
+  ├─ Primjeri korištenja
+  ├─ Konfiguracija parametara
+  ├─ Rješenja čestih problema
+  └─ Checklist za submisiju
+
+• ANALIZA_ZADACA_2_I_3.md (~6.8 KB)
+  ├─ Detaljne informacije o zadaci 2
+  ├─ Sve što je kreirano
+  ├─ Zahtjevi za zadaću 3
+  ├─ Plan implementacije
+  └─ Očekivani output
+
+• requirements.txt
+  └─ Dependencije iz zadace 2
+
+• requirements_zadaca3.txt
+  └─ NOVE dependencije za Point Cloud obradu:
+     - open3d (>=0.17.0)
+     - pyntcloud (>=0.1.0)
+     - transforms3d (>=0.4.0)
+     - numpy, scipy
+     - pyrealsense2 (opcionalno)
+
+═══════════════════════════════════════════════════════════════════════════════
+4. KAKO POČETI S ZADACOM 3
+═══════════════════════════════════════════════════════════════════════════════
+
+KORAK 1: Instalacija Dependencija
+──────────────────────────────────
+  cd D:\truenas_kresimir_share_cp\FSB\semestar_10\humanoidna\for_zadaca_03
+  
+  # Instaliraj sve
+  pip install -r requirements_zadaca3.txt
+
+KORAK 2: Testiranje s Sintetičkim Podacima
+───────────────────────────────────────────
+  python scripts/run_full_pipeline.py
+  
+  Ovo će:
+  ✓ Kreirati sintetičke point cloudove
+  ✓ Obraditi ih kroz cijeli pipeline
+  ✓ Detektirati testne objekte
+  ✓ Ispisati rezultate
+
+KORAK 3: Snimanje Realnih Podataka
+───────────────────────────────────
+  # Ako imaš Intel RealSense kameru:
+  python scripts/capture_point_clouds.py
+  
+  # Ili koristi kod:
+  from scripts.capture_point_clouds import PointCloudCapture
+  capture = PointCloudCapture()
+  files = capture.capture_multiple_positions("scene_01", 3, method="realsense")
+
+KORAK 4: Prilagođavanje za Svoju Specifičnu Zadaću
+───────────────────────────────────────────────────
+  • Uredi object_type u detect_and_localize_object()
+  • Dostavi camera_to_robot_transform (4x4 matrica)
+  • Prilagodi boje HSV za tvoje voće
+  • Pokreni kompletan pipeline
+
+═══════════════════════════════════════════════════════════════════════════════
+5. STRUKTURA FOLDERA - VIZUALNO
+═══════════════════════════════════════════════════════════════════════════════
+
+for_zadaca_03/
+│
+├── 📄 README.md (Glavna dokumentacija)
+├── 📄 ANALIZA_ZADACA_2_I_3.md (Detaljne informacije)
+├── 📄 requirements.txt (Dependencije iz zadace 2)
+├── 📄 requirements_zadaca3.txt (NOVE dependencije)
+│
+├── 📂 scripts/ (Python skripte)
+│   ├── capture_point_clouds.py
+│   ├── pcl_processing.py
+│   ├── object_detection_3d.py
+│   ├── run_full_pipeline.py
+│   ├── predict_on_images.py (referenca)
+│   ├── generate_3d_viz_reference.py (referenca)
+│   └── evaluate_model_reference.py (referenca)
+│
+├── 📂 point_clouds/ (INPUT - gdje sprema point cloudove)
+│   ├── voce_scene_pos1_*.pcd
+│   ├── voce_scene_pos2_*.pcd
+│   └── voce_scene_pos3_*.pcd
+│
+├── 📂 output/ (OUTPUT - rezultati obrade)
+│   ├── final_merged_point_cloud.pcd
+│   └── results.json
+│
+├── 📂 models/ (YOLO modeli)
+│   ├── yolo26n.pt
+│   ├── yolov8n-seg.pt
+│   ├── yolo26n_trained.pt
+│   └── yolo26n-seg_trained.pt
+│
+├── 📂 datasets/ (Treninig dataseti - iz zadace 2)
+│   ├── Humanoidna_svo_voce_02.yolov8-obb/
+│   ├── humanoidna_voce_sve_v3.yolov8/
+│   ├── humanoidna_voce_crvena_jabuka.yolov8/
+│   ├── humanoidna_voce_crvena_jabuka_raw/
+│   └── classes/
+│
+└── 📂 docs/ (Dokumentacija materijala)
+    └── lectures/
+
+═══════════════════════════════════════════════════════════════════════════════
+6. CHECKLIST - ŠTA JE TREBALO NAPRAVITI
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ GOTOVO:
+  ✓ Kreiram folder for_zadaca_03
+  ✓ Prebačem YOLO modele iz zadace 2
+  ✓ Prebačem datasete s 7 klasa voća
+  ✓ Prebačem relevantne skripte iz zadace 2
+  ✓ Kreiram capture_point_clouds.py
+    - Metode za snimanje s RealSense
+    - Sintetički test cloudovi
+    - Sprema u .pcd/.ply format
+  ✓ Kreiram pcl_processing.py
+    - PassThrough filter
+    - Statistical Outlier Removal
+    - VoxelGrid downsampling
+    - ICP registration
+    - Cloud fusion/stitching
+    - Euclidean clustering
+    - RANSAC segmentation
+  ✓ Kreiram object_detection_3d.py
+    - Segmentacija po boji, veličini, obliku
+    - Pronalaženje centroida i bounding boxa
+    - Transformacije koordinata (camera -> robot)
+    - Kompletan pipeline za detekciju
+  ✓ Kreiram run_full_pipeline.py
+    - Integracija svih koraka
+    - Primjeri korištenja
+    - Testni kod sa sintetičkim podacima
+  ✓ Kreiram README.md
+    - Brzi start
+    - Opis svakog modula
+    - Konfiguracija
+    - Primjeri
+    - Problem solving
+  ✓ Kreiram ANALIZA_ZADACA_2_I_3.md
+    - Što je bilo u zadaci 2
+    - Što je trebalo napraviti
+    - Plan implementacije
+  ✓ Kreiram requirements_zadaca3.txt
+    - open3d, pyntcloud, transforms3d
+    - RealSense SDK (opcionalno)
+
+═══════════════════════════════════════════════════════════════════════════════
+7. SLJEDEĆI KORACI - ZA STUDENTA
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Instaliraj sve dependencije:
+   pip install -r requirements_zadaca3.txt
+
+2. Testiraj sa sintetičkim podacima:
+   python scripts/run_full_pipeline.py
+
+3. Snimanje realnih podataka:
+   - Postavi Intel RealSense kameru
+   - Spremi 3 point clouda iste scene s različitih pozicija
+   - Skripte su已priprema za snimanje
+
+4. Prilagođavanje:
+   - Uredi HSV boje za tvoje voće
+   - Dostavi transformaciju kamera -> robot bazu
+   - Pokreni puni pipeline na realnim podacima
+
+5. Dokumentiranje:
+   - Spremi sve rezultate u output/ folder
+   - Napiši izvještaj s rezultatima
+   - Dokumentiraj sve korake
+
+6. Submisija:
+   - Provjeri checklist u README.md
+   - Spremi sve u for_zadaca_03/
+   - Provjeri da su svi fajlovi tamo
+   - Submitaj
+
+═══════════════════════════════════════════════════════════════════════════════
+8. ВАЖНЕ NAPOMENE
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️  PYTHON VERZIJA:
+    • Testirano sa Python 3.9+
+    • Preporučena 3.10 ili 3.11
+
+⚠️  GPU SUPPORT:
+    • YOLO training/inference: CUDA 12.1 (za najnovije torch verzije)
+    • Point cloud obrada: CPU je OK, ali GPU će biti brži
+
+⚠️  MEMORIJA:
+    • Point cloudovi sa 100k+ točaka trebaju ~500 MB RAM-a
+    • ICP registracija je memorijski intenzivna
+
+⚠️  KOORDINATNI SUSTAVI:
+    • Kamera: Z-forward, Y-down (tipično za RGB-D kamere)
+    • Robot: Varira ovisno o konfiguraciji - DEFINIRATI!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Kreiran: 2026-05-20
+Za više informacija, vidi README.md i ANALIZA_ZADACA_2_I_3.md
+
+═══════════════════════════════════════════════════════════════════════════════

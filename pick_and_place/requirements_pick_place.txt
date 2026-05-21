@@ -1,0 +1,21 @@
+# Requirements za Pick and Place Projekt
+
+# Core Dependencies
+numpy>=1.23.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+
+# JSON i datoteke
+pyyaml>=6.0
+pathlib  # built-in u Python 3.4+
+
+# Opciono - za naprednu kinematiku
+roboticstoolbox-python>=1.0.0
+spatialmath-python>=0.13.0
+
+# Opciono - za vizualizaciju
+plotly>=5.0.0
+open3d>=0.17.0  # Ako trebam 3D vizualizaciju point cloudova
+
+# Socket komunikacija - built-in u Python
+# socket, json, pathlib su built-in moduli

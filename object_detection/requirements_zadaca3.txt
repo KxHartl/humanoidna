@@ -1,0 +1,29 @@
+# Core Dependencies (iz zadace 2)
+ultralytics>=8.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+opencv-python>=4.7.0
+matplotlib>=3.7.0
+pyyaml>=6.0
+pandas>=1.5.0
+scikit-learn>=1.2.0
+
+# Nove dependencije za Point Cloud obradu (zadaca 3)
+# =====================================================
+
+# Point Cloud Processing
+open3d>=0.17.0           # 3D data processing, visualization
+pyntcloud>=0.1.0         # Python Point Cloud utility
+
+# 3D Transformacije i Rotacije
+numpy>=1.23.0
+scipy>=1.10.0
+transforms3d>=0.4.0      # 3D transformations (rotation matrices, quaternions)
+
+# Senzori (RGB-D kamere)
+pyrealsense2>=2.52.0     # Intel RealSense D455/D435 (opcionalno, ako koristiš kameru)
+
+# Dodatni alati
+tqdm>=4.65.0             # Progress bars
+pillow>=9.5.0            # Image processing

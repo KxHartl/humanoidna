@@ -1,0 +1,135 @@
+Perceptivno-manipulacijski 
+sustav za autonomni pick-and-
+place nepravilnih objekata
+
+Cilj zadatka je implementirati cjelovit perceptivno-
+manipulacijski sustav na UR robotskoj ruci koristeći:
+• RealSense RGB-D kameru
+• Obradu point cloud podataka
+• Kalibraciju koordinatnih sustava
+• Generiranje trajektorija
+• TCP/IP komunikaciju s robotom
+• Soft gripper za manipulaciju objektima nepravilnog oblika
+
+Sustav mora autonomno:
+1. Detektirati zadani objekt u sceni
+2. Procijeniti njegovu 3D poziciju
+3. Transformirati koordinatu u koordinatni sustav baze robota
+4. Generirati trajektoriju
+5. Izvršiti pick-and-place zadatak
+• Svaki student samostalno implementira zadatak.
+
+Radno okruženje:
+Sustav se implementira koristeći:
+• UR robot, 
+• RealSense kameru, 
+• C++/Python,
+• OpenCV, 
+• PCL biblioteku, 
+• TCP/IP komunikaciju s robotom
+Potrebno je koristiti metode i predznanja s kolegija: Industrijske i računalne mreže, Algoritmi 
+strojnog vida te Humanoidni roboti i biomimetički sustavi
+
+1. Kalibracije:
+Kalibracija TCP-a: definirati i kalibrirati TCP soft grippera
+Kalibracija kamere: potrebno je odrediti odnos TCP-a soft grippera i kamere (eye-in-hand)
+piSOFTGRIP Piab soft gripperKamera i nosač
+
+
+2. Snimanje scene:
+Potrebno je snimiti: najmanje 3 point clouda iste scene (3 različite pozicije robota/kamere). 
+Pozicije snimanja moraju biti različite tako da se dobije dodatna geometrijska informacija 
+scene
+Scena sadrži: više objekata nepravilnog oblika 
+(3D printano voće). U sceni je potrebno smjestiti 
+po jedan objekt svakog tipa voća (7 ukupno).
+
+
+3. Obrada point cloud podataka:
+Potrebno je implementirati kompletan pipeline obrade point clouda
+Obavezni koraci: filtriranje, uklanjanje outliera, downsampling, registracija point cloudova, 
+stitching/fuzija point cloudova, ICP ili druga metoda registracije, segmentacija objekata
+Potrebno je koristiti metode obrađene na predavanjima i vježbama: PassThrough, 
+StatisticalOutlierRemoval, VoxelGrid, SACSegmentation, EuclideanClusterExtraction, ICP, 
+RANSAC, i druge metode iz PCL biblioteke.
+Nakon ovog koraka potrebno je imati jedan konačni registrirani point cloud scene.
+
+4. Detekcija i lokalizacija objekta:
+• Svaki student ima točno definirani objekt koji mora dohvatiti (tablica)
+• Potrebno je: 
+1. Segmentirati zadani objekt
+2. Pronaći njegov centar
+3. Odrediti 3D koordinatu objekta u koordinatnom sustavu kamere
+4. Transformirati koordinatu u koordinatni sustav baze robota Objekt Student
+Orah Akrap
+Banana Ćuk
+Naranča Gugo
+Crvena jabuka Hartl
+Limun Noršić
+Zelena jabuka Pongračić
+• Koordinate objekta NE SMIJU biti:
+• Ručno zadane, 
+• Ručno naučene, 
+• Unaprijed poznate
+• Pozicija mora biti određena isključivo iz podataka kamere.
+
+5. Pick and place:
+• Robot mora autonomno izvršiti izuzimanje, prijenos i odlaganje objekta
+• Obavezne točke trajektorije:
+1. HOME
+2. APPROACH iznad objekta 
+3. PICK
+4. APPROACH PLACE iznad mjesta odlaganja 
+5. PLACE
+• PICK – podaci dobiveni iz point clouda
+• PLACE – može biti fiksno i unaprijed određena
+• Kretnje između točaka ostvaruju se vlastitim generiranim trajektorijama 
+(detaljne upute na sljedećem slajdu)
+
+6. Generiranje trajektorija:
+• Definicija trajektorije:
+• Definirana u task space-u
+• Robot mora prolaziti kroz svaku zadanu točku (nema blendinga radijusa)
+• Robotu se šalje samo 𝒙𝑟𝑒𝑓 (kao što smo na vježbi slali simulatoru robota) – PAZITE DA STE 
+DOVOLJNO DISKRETIZIRALI KRETNJU 
+• Robot radi ‘control’ dio - Robot izvršava samo niskorazinsku regulaciju i praćenje zadanih referenci
+• APPROACH iznad objekta i APPROACH PLACE iznad mjesta odlaganja moraju biti definirane u 
+odnosu na PICK i PLACE fiksno (npr. offset po z-osi za 100 mm)
+• Trajektorije MORAJU poštovati ograničenja robota, biti izvedive i biti glatke
+TIJEKOM PUŠTANJA PROGRAMA POTREBNO JE PAZITI NA SUDARE SA STOLOM, SUDARE S OBJEKTIMA, NAGLE 
+PROMJENE BRZINA – potrebno je konstantno biti na oprezu da ne dođe do ozlijede studenata ili oštećenja opreme
+
+7. Upute za predaju:
+• Svaki studenat predaje svoje izvješće
+• Svako se izvješće sastoji od videozapisa, cjelovitog koda korištenog za rješavanje svih 
+dijelova zadataka te pisanog dijela izvješća
+• Predajete .zip datoteku sa svim materijalima
+• Rok predaje: 22.5.2026., 23:59
+• Ovaj zadatak nosi 15% ukupne ocjene kolegija
+
+7. Upute za predaju - videozapis:
+• Potrebno je predati videozapis koji prikazuje kompletan pipeline rada sustava.
+• Video mora sadržavati:
+1. snimanje point cloudova scene, 
+2. odlazak robota po objekt, 
+3. podizanje objekta, 
+4. ostavljanje objekta na zadanu lokaciju
+• Nakon što robot pokupi i ostavi predmet jednom, potrebno je bez zaustavljanja 
+videozapisa predmet staviti na novo mjesto te još jednom pokrenuti pipeline
+• Video ne mora biti montiran niti profesionalno obrađen, ali svi ključni koraci rada sustava 
+moraju biti jasno prikazani. Tijekom demonstracije nije dozvoljena ručna intervencija u 
+izvođenju pipeline-a.
+
+7. Upute za predaju – pisano izvješće:
+• Izvješće mora biti kratko i tehnički strukturirano, te je maksimalna duljina 10 stranica
+• Nije potrebno pisati teorijski uvod niti objašnjavati korištene metode pošto su sve 
+prethodno obrađene na nastavi
+• Izvješće mora sadržavati:
+• Arhitekturu sustava (pipeline, kratki opis svakog modula)
+• Kalibracija (matrice transformacija)
+• Obradu PC-a (za svaki PC prikazati originalni PC, filtrirani PC, segmentirani PC te konačno prikazati rezultat 
+registracije sva tri PC-a uz navođenje korištenih metoda te odabranih parametara)
+• Detekcija objekata (način segmentacije, određivanje centra objekta)
+• Generiranje trajektorija (potrebno je napraviti analizu jedne cjelovite trajektorije (sve generirane točke, 
+vremena svih međutrajektorija, vizualizaciju svih međutrajektorija s istaknutih pet glavnih TCP poza, za jedan 
+segment (međutrajektoriju) potrebno je prikazati grafove 𝒙 𝑡 , ሶ𝒙 𝑡 , ሷ𝒙 𝑡 )

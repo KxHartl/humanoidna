@@ -1,0 +1,542 @@
+Tara Knežević, 
+mag. ing. mech.
+Humanoidni roboti i biomimetički sustavi, Zagreb, 2025./2026.
+Upravljanje i interakcija 
+kompleksnih robotskih sustava
+
+Ponavljanje
+• Do sada smo radili:
+• Regulaciju jednostavnijih sustava 
+• PID upravljanje 
+• Joint i task space control
+• Cilj je bio:
+• Pratiti zadanu trajektoriju 
+• Minimizirati grešku 
+
+Motivacija
+
+Motivacija
+
+Motivacija
+
+Motivacija
+
+Motivacija
+     
+                          
+                     
+                          
+                     
+
+Motivacija
+     
+                          
+                     
+                          
+                     
+
+Upravljanje kompleksnim robotskim 
+sustavima u MuJoCo simulatoru
+OD KLASIČNOG PREMA OPTIMALNOM UPRAVLJANJU 
+ROBOTSKIH SUSTAVA
+Kompleksni robotski sustavi u MuJoCo simulatoru
+• U stvarnim robotskim sustavima pojavljuju se:
+• Veliki broj stupnjeva slobode
+• Nelinearna dinamika
+• Kontakt s okolinom
+• Coupling između dijelova sustava
+UPRAVLJANJE VIŠE NIJE SAMO SLANJE 
+MOMENTA NA JEDAN ZGLOB — CIJELI 
+SUSTAV POSTAJE MEĐUSOBNO POVEZAN I 
+TE ODNOSE JE POTREBNO RAZMATRATI
+Kompleksni sustavi teško se testiraju direktno na hardveru
+• Razvoj upravljanja na stvarnom 
+robotu je:
+• Skup 
+• Spor 
+• Potencijalno opasan
+• Greške u upravljanju mogu dovesti do:
+• Sudara robota s okolinom 
+• Oštećenja aktuatora i senzora 
+• Nestabilnog ponašanja sustava
+KOD HUMANOIDNIH 
+ROBOTA DODATNI PROBLEM 
+PREDSTAVLJA ODRŽAVANJE 
+BALANSA, GDJE I MALE 
+GREŠKE MOGU UZROKOVATI 
+PAD SUSTAVA
+MuJoCo Menagerie
+• Biblioteka gotovih robotskih modela (kinematičkih i dinamičkih)
+• Razvijena za MuJoCo simulator
+• https://github.com/google-deepmind/mujoco_menagerie
+• Sadrži:
+• Manipulatore (KUKA LBR iiwa 1, Franka Emika Panda)
+• Humanoide (Apptronik Apollo, TALOS, Unitree H1)
+• Četveronožne robote (Boston Dynamics Spot, Google Barkour)
+• Dronove (Bitcraze Crazyflie 2, Skydio X2)
+• Modeli uključuju:
+• Geometriju
+• Mase i inercije
+• Zglobove i aktuaciju,
+• Kontaktne parametre
+MJCF/XML zapis robota
+• Robot je definiran pomoću MJCF XML zapisa
+• XML zapis definira:
+• Kako su segmenti robota povezani
+• Koji tipovi zglobova postoje
+• Kako izgledaju pojedini dijelovi robota
+• Na koji način djeluju aktuatori
+PONAVLJANJE
+• Na temelju XML modela simulator računa:
+• Gibanje robota
+• Djelovanje sila i momenata
+• Kontaktne interakcije
+• Odziv sustava na upravljačke signale
+Aktuatori i indeksi u MuJoCo-u
+• Kod kompleksnih robotskih sustava indeksi koji mogu, ali ne moraju biti isti:
+• Joint index 
+• DOF index 
+• Actuator index
+HUMANOIDNI ROBOT – DEMO2
+→ zglobovi definiraju kinematiku
+• Humanoidni sustavi imaju velik broj aktuatora
+• Upravljanje često želimo provoditi samo nad dijelom sustava pa je potrebno 
+pravilno mapirati: stanje sustava, aktuaciju, dinamiku
+→ DOF-ovi definiraju dinamiku
+→ aktuatori definiraju upravljanje
+01_actuators.py
+
+Vrste aktuatora u MuJoCo-u
+• Vrijednosti koje šaljemo u ‘dana.ctrl[i]’ ne predstavljaju uvijek istu fizičku 
+veličinu
+• Značenje upravljačkog signala ovisi o tipu aktuatora definiranom u XML 
+modelu robota
+1. Position aktuator
+• Aktuator prima željenu poziciju zgloba
+• MuJoCo interno generira moment koji pokušava dovesti zglob na 
+zadanu poziciju
+• Aktuator se ponaša poput internog proporcionalnog regulatora
+𝜏 = 𝑘𝑝 𝑞𝑑 − 𝑞
+𝑢 = 𝑞𝑑
+Vrste aktuatora u MuJoCo-u
+2. Velocity aktuator
+• Aktuator prima željenu brzinu zgloba
+• MuJoCo generira moment koji pokušava ostvariti zadanu brzinu gibanja
+3. Motor actuator (torque control)
+• Upravljački signal direktno predstavlja moment ili silu aktuatora
+• MuJoCo tada:
+• Ne implementira interni regulator
+• Direktno koristi zadani moment u dinamici sustava
+𝜏 = 𝑘𝑣 ሶ𝑞𝑑 − ሶ𝑞 , 𝑢 = ሶ𝑞𝑑
+𝜏 = u
+Hijerarhija upravljanja
+1. Vanjski regulator
+• Mi implementiramo (trajectory tracking, PID, impedance, LQR..)
+• Npr. generiramo 𝑞𝑑
+2. Aktuator
+• Interpretira signal (pozicija/brzina/torque)
+• Npr. za position aktuator: 𝜏 = 𝑘𝑝 𝑞𝑑 − 𝑞 = u
+BITNO!!!
+Možemo li onda imati PD/PID control?
+DA! – izlaz naših upravljačkih zakona ne smije biti direktni torque, nego npr. 𝑞𝑑
+VANJSKI
+REGULATOR
+POSITION
+ACTUATOR
+DINAMIKA 
+SUSTAVA
+Željena pozicija 𝑞𝑑 interni P regulator
+(moment 𝜏)
+Primjeri kompleksnih robotskih sustava
+• Unitree H1:
+• Humanoidni robot 
+• Whole-body sustav - problem održavanja balansa
+HUMANOIDNI ROBOT
+• Pomicanje ruke ili trupa utječe na:
+• Raspodjelu masa
+• Kontaktne sile
+• Stabilnost sustava
+
+Primjeri kompleksnih robotskih sustava
+• Unitree H1:
+• Radi izravno s torque naredbama
+HUMANOIDNI ROBOT
+
+Primjeri kompleksnih robotskih sustava
+• U ovom primjeru svi upravljački signali aktuatora postavljeni su na 0
+• Robot nema aktivno upravljanje 𝑢 = 0
+• Kakvo ponašanje robota očekujemo, ako je početna konfiguracija robota 
+takva da stoji i zašto?
+HUMANOIDNI ROBOT – DEMO1 - Humanoid bez upravljanja
+• Sustav reagira isključivo na gravitaciju, kontaktne sile i vlastitu dinamiku
+• Robot nema:
+• Stabilizaciju
+• Kontrolu centra mase
+• Održavanje ravnoteže
+HUMANOIDNI ROBOTI ZAHTIJEVAJU KONTINUIRANU 
+KOREKCIJU POLOŽAJA I RASPODJELE SILA KAKO BI 
+ODRŽALI DINAMIČKU RAVNOTEŽU.
+• Bez aktivnog upravljanja:
+• Centar mase izlazi iz područja oslonca 
+• Dolazi do gubitka ravnoteže 
+• Sustav postaje nestabilan i robot pada
+02_demo_Unitree_H1.py
+Primjeri kompleksnih robotskih sustava
+• Cilj je upravljati samo desnom rukom humanoidnog robota koristeći:
+• Joint-space reference (polinom 5. reda)
+• PD torque upravljanje
+HUMANOIDNI ROBOT – DEMO2 - Humanoid s upravljanjem ruku
+03_demo_Unitree_H1_random_control.py
+• Humanoid koristi motor aktuatore: 𝑢 = 𝜏
+• Upravljački zakon: 𝜏 = 𝐾𝑝 𝑞𝑑 − 𝑞 + 𝐾𝑑 ሶ𝑞𝑑 − ሶ𝑞
+• Regulator:
+• Uspoređuje željenu i trenutnu konfiguraciju
+• Generira moment aktuatora
+• Prigušuje gibanje preko derivativnog člana
+KOD HUMANOIDNOG ROBOTA UNITREE H1 AKTUATORI SU 
+DEFINIRANI KAO MOTOR AKTUATORI, PA UPRAVLJAČKI 
+SIGNAL PREDSTAVLJA DIREKTNI MOMENT AKTUATORA.
+Primjeri kompleksnih robotskih sustava
+• Cilj trenutno nije rješavanje problema balansiranja humanoida
+• Želimo se fokusirati na:
+• Generiranje trajektorija
+• Task-space upravljanje
+• Jacobian mapiranje
+• Impedance control
+• Kod humanoida bi problem stabilizacije dominirao nad samim upravljanjem 
+trajektorije
+PRIJELAZ: humanoid → manipulator
+• Koja vrsta robota bi nam omogućila fokus na problemima koji nas zanimaju?
+MANIPULATOR NAM OMOGUĆUJE DA PROUČAVAMO 
+NAPREDNE UPRAVLJAČKE ZAKONE BEZ DODATNOG 
+PROBLEMA ODRŽAVANJA DINAMIČKE RAVNOTEŽE.
+Primjeri kompleksnih robotskih sustava
+• Franka Emika Panda:
+• 7 DOF redundantni manipulator 
+• Fiksirana baza 
+• Pogodan za task-space upravljanje
+MANIPULATOR
+• Zbog fiksirane baze ne postoji problem održavanja balansa, pa se možemo 
+fokusirati na:
+• Generiranje trajektorije 
+• Task-space control
+• Jacobian i redundantnost sustava
+
+Primjeri kompleksnih robotskih sustava
+• Franka Emika Panda – tip aktuatora
+MANIPULATOR
+• <general> nije tip upravljanja, nego fleksibilni aktuator model
+• Kako prepoznajemo tip aktuatora?
+• Tip aktuatora određujemo iz jednadžbe koju implementira
+• Parametri ‘gainprm’ i ‘biasprm’ definiraju odnos između:
+• upravljačkog signala
+• stanja sustava
+• generiranog momenta
+• Općenito vrijedi: 𝜏 = gainprm ∗ u + biasprm 0 + biasprm 1 q + biasprm[2] ሶ𝑞
+Upravljački signal (data.ctrl)
+pozicija zgloba brzina zgloba
+kako upravljački signal utječe na 
+generirani moment aktuatora Konstantni bias član Pojačanje P člana Pojačanje D člana
+Primjeri kompleksnih robotskih sustava
+• Franka Emika Panda – joint 1 (ostali su analogni)
+MANIPULATOR
+𝜏 = 4500u − 4500𝑞 − 450 ሶ𝑞
+𝜏 = 4500(u − 𝑞) − 450 ሶ𝑞
+Ako vrijedi: 𝑢 = 𝑞𝑑
+𝜏 = 4500(𝑞𝑑 − 𝑞) − 450 ሶ𝑞
+𝜏 = 𝐾𝑝(𝑞𝑑 − 𝑞) − 𝐾𝑑 ሶ𝑞
+Primjeri kompleksnih robotskih sustava
+General actuator - općenito
+• Općenito, general actuator može implementirati:
+• position servo
+• velocity servo
+• torque actuator
+• tendon actuator
+• custom dynamics…
+• Torque actuator: gainprm = "1", biasprm= "0 0 0"
+𝜏 = 𝑢
+Primjeri kompleksnih robotskih sustava
+• U prošlim predavanjima definirali smo:
+• Kako generirati trajektoriju
+• Kako definirati grešku
+• Kako koristiti Jacobian za prijelaz task → joint space
+MANIPULATOR – DEMO3 – Upravljački zakon u task space-u
+• Što želimo napraviti prilikom implementacije?
+• Učitati model robota iz MuJoCo Menagerie
+• Očitati trenutno stanje robota
+• Izračunati task-space grešku
+• Preko Jacobiana dobiti gibanje zglobova 
+• Poslati komandu aktuatorima
+CILJ VIŠE NIJE SAMO RAZUMJETI JEDNADŽBU, NEGO 
+VIDJETI KAKO SE ONA PRETVARA U SIMULACIJSKI KOD.
+Primjeri kompleksnih robotskih sustava
+• Bitna razlika: stanje vs aktuacija:
+• qpos → položaji zglobova 
+• qvel → brzine zglobova 
+• ctrl → komande aktuatorima
+MANIPULATOR – DEMO3 – Upravljački zakon u task space-u
+• Kod kompleksnijih modela prvo moramo provjeriti:
+• Koje zglobove želimo koristiti 
+• Koji aktuatori djeluju na te zglobove 
+• Što ctrl zapravo predstavlja
+• Kod Panda modela iz Menagerie komande aktuatorima su pozicijske 
+reference, a ne direktni momenti.
+Priprema (instalacija) 
+• Potrebno je instalirati Mujoco Menagerie
+• Savjet: napravite direktorij ‘mujoco’ u C disku
+• U terminalu: pozicionirajte se u napravljen direktorij
+• Klonirajte repo:
+• Kasnije u kodu pazite da je dobro referenciran direktorij, npr. za 
+učitavanje modela Unitree H1 robota:  
+C:\mujoco\
+cd C:\mujoco
+git clone https://github.com/google-deepmind/mujoco_menagerie.git
+model = mujoco.MjModel.from_xml_path(
+    r"C:\mujoco\mujoco_menagerie\unitree_h1\scene.xml"
+)
+• Proučite XML datoteke za Unitree H1 i Franka Emika Panda robote te 
+usporedite s jednostavnim modelom 3DOF koji je generiran na prošloj vježbi
+Zadatak 1 - Task Space upravljanje — Franka Emika Panda
+• Zadajemo željenu trajektoriju end-effektora kao kružnicu u YZ ravnini (task space), a 
+referenca pozicije prati sljedeći zakon:
+𝑥𝑑 𝑡 = 𝑥0 +
+0
+𝑟 cos (𝜔𝑡) −1
+𝑟 sin(𝜔𝑡)
+, r = 0.08 m, 𝜔 = 3.5 𝑟𝑎𝑑/𝑠
+• Zadajemo željenu trajektoriju end-effektora kao kružnicu u YZ ravnini (task space), a 
+referenca brzine prati sljedeći zakon:
+ሶ𝑥𝑑 𝑡 =
+0
+−𝑟𝜔 sin 𝜔𝑡
+𝑟𝜔 𝑐𝑜𝑠 𝜔𝑡
+• Orijentacija end-effektora drži se konstantnom: 𝑅𝑑 = 𝑅0 = 𝑐𝑜𝑛𝑠𝑡. , 𝜔𝑑 = 0
+• Pogreška u prostoru zadatka:
+• Pozicijska pogreška: 𝑒𝑝𝑜𝑠 = 𝑥𝑑 − 𝑥
+• Rotacijska pogreška: 𝑒𝑟 =
+1
+2 𝑅𝑑𝑅𝑇 − 𝑅𝑅𝑑
+𝑇 𝑉
+- iz antisimetrične razlike rotacijskih matrica)
+• Napomena: operator ⋅ ∨izvlači vektor iz antisimetrične matrice
+Sve označeno bojom vi implementirate u kodu
+Zadatak 1 - Task Space upravljanje — Franka Emika Panda
+• Upravljački zakon u task space-u:
+• Željene brzine u task spaceu (6D):
+𝑣𝑐𝑚𝑑
+𝜔𝑐𝑚𝑑
+= ሶ𝑥𝑑 + 𝐾𝑝𝑜𝑠 ⋅ 𝑒𝑝𝑜𝑠
+𝜔𝑑 + 2𝐾𝑟𝑜𝑡 ⋅ 𝑒𝑟𝑜𝑡
+, 𝐾𝑝𝑜𝑠 = 15, 𝐾𝑟𝑜𝑡 = 10
+Sve označeno bojom vi implementirate u kodu
+• Preslikavanje u prostor zglobova:
+• Jacobian matrica 𝐽 ∈ ℝ6×7dijeli se na translacijski i rotacijski dio: 𝐽 = 𝐽𝑝
+𝐽𝑅
+• Željene brzine zglobova dobivaju se pseudoinverzom
+ሶ𝑞𝑐𝑚𝑑 = 𝐽† 𝑣𝑐𝑚𝑑
+𝜔𝑐𝑚𝑑
+𝐽† = 𝐽𝑇 𝐽𝐽𝑇 + 𝜆2𝐼
+−1
+, 𝜆 = 0.03
+• Integracija i pozicijska naredba 
+• Referentni kutovi zglobova se iz brzina dobivaju Eulerovom integracijom: 
+𝑞𝑟𝑒𝑓 𝑡 + Δ𝑡 = 𝑞𝑟𝑒𝑓 𝑡 + ሶ𝑞𝑐𝑚𝑑 ⋅ Δ𝑡
+• Referentni kutovi zglobova šalju se kao pozicijska naredba PD aktuatorima: 𝑢 = 𝑞𝑟𝑒𝑓
+Zadatak 2 – vizualizacija podataka
+• Nakon provedene simulacije task space upravljanja, logirali ste signale u datoteku 
+"data/sim_data_task_space.npz"
+• Potrebno je napisati ‘.py’ skriptu kojom ćete vizualizirati:
+1. Praćenje pozicije - 𝑞𝑟𝑒𝑓 vs  𝑞𝑚𝑒𝑎𝑠
+2. Praćenje brzine - ሶ𝑞𝑟𝑒𝑓 vs  ሶ𝑞𝑚𝑒𝑎𝑠
+3. Upravljački signal - 𝑢 𝑡
+Upravljanje interakcijom i 
+kontaktnim silama
+FORCE AND INTERACTION CONTROL
+Zašto klasično pozicijsko upravljanje nije dovoljno?
+• U stvarnim robotskim zadacima robot:
+• Dolazi u kontakt s okolinom
+• Djeluje silama na objekte
+• Prima sile iz okoline
+• Primjeri:
+• Manipulacija objekata
+• Otvaranje vrata
+• Humanoidno hodanje
+• Kontakt s podlogom
+• Suradnja s čovjekom
+
+Zašto klasično pozicijsko upravljanje nije dovoljno?
+• U stvarnim robotskim zadacima robot:
+• Dolazi u kontakt s okolinom
+• Djeluje silama na objekte
+• Prima sile iz okoline
+• Primjeri:
+• Manipulacija objekata
+• Otvaranje vrata
+• Humanoidno hodanje
+• Kontakt s podlogom
+• Suradnja s čovjekom
+
+Zašto klasično pozicijsko upravljanje nije dovoljno?
+• U stvarnim robotskim zadacima robot:
+• Dolazi u kontakt s okolinom
+• Djeluje silama na objekte
+• Prima sile iz okoline
+• Primjeri:
+• Manipulacija objekata
+• Otvaranje vrata
+• Humanoidno hodanje
+• Kontakt s podlogom
+• Suradnja s čovjekom
+
+Zašto klasično pozicijsko upravljanje nije dovoljno?
+• U stvarnim robotskim zadacima robot:
+• Dolazi u kontakt s okolinom
+• Djeluje silama na objekte
+• Prima sile iz okoline
+• Primjeri:
+• Manipulacija objekata
+• Otvaranje vrata
+• Humanoidno hodanje
+• Kontakt s podlogom
+• Suradnja s čovjekom
+KOD INTERAKCIJSKIH ZADATAKA 
+VAŽAN NIJE SAMO POLOŽAJ 
+ROBOTA, NEGO I NAČIN NA KOJI 
+ROBOT REAGIRA NA SILE IZ OKOLINE.
+Ideja compliant ponašanja
+• Želimo da se robot ponaša:
+• Elastično
+• Prilagodljivo
+• “Meko” tijekom kontakta
+• Intuicija:
+• Umjesto beskonačno krutog position controla želimo ponašanje slično:
+• Opruzi, prigušivaču, mehaničkom sustavu
+• Posljedica je da robot može:
+• Apsorbirati kontaktne sile
+• Sigurnije interagirati s okolinom
+• Stabilnije izvršavati kontaktne zadatke
+COMPLIANCE CONTROL DEFINIRA KAKO 
+ROBOT REAGIRA NA KONTAKTNE SILE 
+TIJEKOM INTERAKCIJE S OKOLINOM.
+Impedance control
+• Impedance control definira odnos između gibanja robota i kontaktnih sila
+• Željeno ponašanje robota je poput sustava mase, opruge i prigušivača
+ 
+ 
+ 
+ 
+FM
+D K
+𝐹 = 𝑀 ሷ𝑥 + 𝐷 ሶ𝑥 + 𝐾𝑥
+• M → virtualna masa (inercija) – uvijek uz akceleraciju
+• D → prigušenje
+• K → krutost sustava
+• Intuicija je da, ako vanjska sila djeluje na robota:
+• Robot dopušta određeno odstupanje
+• Robot generira silu koja se suprotstavlja poremećaju
+IMPEDANCE CONTROL DEFINIRA KAKO 
+GIBANJE ROBOTA GENERIRA KONTAKTNE SILE
+Admittance control
+• Admittance control definira kako vanjske sile uzrokuju gibanje robota
+ 
+ 
+ 
+ 
+FM
+D K
+𝑀 ሷ𝑥 + 𝐷 ሶ𝑥 + 𝐾𝑥 = 𝐹𝑒𝑥𝑡
+• Intuicija je da vanjska sila postaje ulaz sustava, a regulator nameće željeno gibanje 
+robota kako bi ju omogućio
+ADMITTANCE CONTROL DEFINIRA KAKO 
+KONTAKTNE SILE UZROKUJU GIBANJE ROBOTA.
+Impedance vs. admittance control
+Impedance Admittance
+Zakon: Gibanje → sila Sila → gibanje
+Ulaz: Gibanje Sila
+Izlaz: Sila Gibanje
+Kontroler: Pogodno za torque control Pogodno za position control
+Ponašanje robota: Robot se ponaša kao 
+mehanička impedancija
+Robot se ponaša kao 
+mehanička admitancija
+Zadatak 3 - Impedance upravljanje — Franka Emika Panda
+• Motivacija i osnovna ideja:
+• Impedance upravljanje definira mehaničko ponašanje end-effektora umjesto da 
+zadaje poziciju. Robot se ponaša kao virtualni sustav masa-prigušivač-opruga:
+𝑀𝑑 ሷⅇ + 𝐷𝑑 ሶⅇ + 𝐾𝑑ⅇ = 𝐹𝑒𝑥𝑡 • 𝑀𝑑 → željena inercijska matrica 𝑘𝑔
+• 𝐷𝑑 → matrica prigušenja 𝑁𝑠/𝑚
+• 𝐾𝑑 → matrica krutosti 𝑁/𝑚
+• 𝐹𝑒𝑥𝑡 → vanjska sila 𝑁
+• ⅇ = 𝑥𝑑 − 𝑥 → pozicijska greška 𝑚
+• Željena inercijska matrica definira način na koji želimo da se EEF ponaša
+• Npr. 𝑀𝑑 = diag(0.5, 0.5, 0.5) - Ponašaj se kao da end-effektor ima masu 0.5 kg u svakom 
+smjeru
+• Veliki 𝑀𝑑 → end-effektor se "osjeća teško" → sporo reagira na sile → mekše, tromost 
+• Mali 𝑀𝑑 → brzo reagira na sile → agresivniji odgovor
+KLJUČNA RAZLIKA OD TASK SPACE UPRAVLJANJA: ROBOT NE POKUŠAVA ELIMINIRATI 
+POGREŠKU PO SVAKU CIJENU — DOPUŠTA POMAK PROPORCIONALAN PRIMIJENJENOJ SILI.
+Zadatak 3 - Impedance upravljanje — Franka Emika Panda
+• Definiranje proizvoljne scene kao XML datoteke
+• Umjesto da pišemo cijeli robot od nule, koristimo include koji učitava gotov Panda 
+model iz MuJoCo Menagerie repozitorija
+• Sve što dodajemo u <worldbody> postoji uz robota u istoj sceni
+• Stol je definiran kao jedan <body> s pet geometrija — gornja ploča i četiri noge
+Zadatak 3 - Impedance upravljanje — Franka Emika Panda
+• Referenca i scena:
+• Robot se spušta prema stolu po minimum jerk trajektoriji duž Z osi
+• 𝑥𝑡𝑎𝑟𝑔𝑒𝑡 definiran je prema visini gornje plohe stola
+• Orijentacija EEF drži se konstantnom - 𝑅𝑑 = 𝑅0 = const.
+𝑠 𝜏 = 10𝜏3 − 15𝜏4 + 6𝜏5,    𝜏 =
+𝑡
+𝑇
+𝑥𝑑 𝑡 = 𝑥0 + 𝑥𝑡𝑎𝑟𝑔𝑒𝑡 − 𝑥0 ⋅ 𝑠 𝑇 , 𝑇 = 6 𝑠𝑒𝑘𝑢𝑛𝑑𝑖, 𝑥𝑡𝑎𝑟𝑔𝑒𝑡 = 0.22𝑚
+• Upravljački zakon:
+• Željeno ubrzanje u task spaceu dobiva se iz impedance zakona
+• Parametri iznose:
+• 𝑀𝑑 = diag(0.5, 0.5, 0.5) 𝑘𝑔
+• 𝐷𝑑 = diag(80, 80, 80) 𝑁𝑠/𝑚
+• 𝐾𝑑 = diag(400, 400, 400) 𝑁/𝑚
+ሷ𝑥𝑐𝑚𝑑 = ሷ𝑥𝑑 + 𝑀𝑑
+−1 𝐷𝑑 ሶⅇ + 𝐾𝑑ⅇ + 𝐹𝑒𝑥𝑡
+• Vanjska sila čista se direktno iz simulatora kao: 𝐹𝑒𝑥𝑡 = data.cfrc_ext[hand][3:6]
+Sve označeno bojom vi implementirate u kodu
+Predznak sile ovisi o definiciji 
+kontakta i smjeru osi.
+Zadatak 3 - Impedance upravljanje — Franka Emika Panda
+• Preslikavanje u prostor zglobova:
+• Translacijski Jacobian 𝐽𝑝 ∈ ℝ
+3×7
+preslikava task space ubrzanje u zglobne 
+momente:
+• Napomena, u ovom slučaju 𝑀 𝑞 ∈ ℝ7×7 je masa inercije robota u joint space-u
+𝐽† = 𝐽𝑇 𝐽𝐽𝑇 + 𝜆2𝐼
+−1
+, 𝜆 = 0.01𝜏task = 𝑀 𝑞 ⋅ 𝐽𝑝
+† ⋅ ሷ𝑥𝑐𝑚𝑑,
+• Null-space projektor:
+• Radimo s redundantnom kinematičkom strukturom – možemo null-space koristiti 
+za regularizaciju joint space-a bez utjecaja na task space 𝑁 = 𝐼 − 𝐽𝑝𝑇 𝐽𝑝𝑇 +
+𝜏𝑟𝑜𝑡 = 𝑁 𝐾p,𝑟𝑜𝑡 𝑞𝑖𝑛𝑖𝑡 − 𝑞 − 𝐾𝑑,𝑟𝑜𝑡 ሶ𝑞
+𝐾p,𝑟𝑜𝑡 = 300, 𝐾𝑑,𝑟𝑜𝑡 = 20
+• Ukupna naredba momenta s gravitacijskom kompenzacijom
+• Moment se šalje direktno u zglobove zaobilazeći position-controlled aktuatore: 
+qfrc_appliⅇd= 𝜏𝑐𝑚𝑑
+𝜏𝑐𝑚𝑑 = 𝜏𝑡𝑎𝑠𝑘 + 𝜏𝑟𝑜𝑡 + 𝜏𝑔𝑟𝑎𝑣
+Sve označeno bojom vi implementirate u kodu
+Zadatak 3 - Impedance upravljanje — Franka Emika Panda
+• Procjena kontaktne sile:
+• Mjeriti možemo samo vanjske sile, a kontaktne sile u task space-u koje nastaju 
+djelovanjem robota možemo procijeniti preko momenata u joint space-u:
+෠𝐹𝑐 = 𝐽𝑝𝑇 +
+𝜏𝑐𝑚𝑑 − 𝜏𝑔𝑟𝑎𝑣
+• Ovo je ekvivalent virtualnog F/T senzora na wristu — vidljivo je u logiranim
+podacima kao 𝐹𝑒𝑠𝑡
+Sve označeno bojom vi implementirate u kodu
+Zadatak 4 - Vizualizacija i analiza
+• Nakon provedene simulacije task space upravljanja, logirali ste signale u datoteku 
+"data/sim_data_impedance.npz"
+• Potrebno je napisati ‘.py’ skriptu kojom ćete vizualizirati:
+1. Praćenje pozicije - 𝑞𝑟𝑒𝑓 vs  𝑞𝑚𝑒𝑎𝑠
+2. Sila eksterna - 𝐹𝑒𝑥𝑡(t)
+3. Procijenjena sila iz momenta- 𝐹𝑒𝑠𝑡(t)
+4. Momenti u joint space-u za sve zglobove
