@@ -168,3 +168,25 @@ class StorageAdapter(IStorageAdapter):
             })
             
         return views
+
+    def save_run_data(self, views: List[Dict[str, Any]]) -> str:
+        from datetime import datetime
+        run_name = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        run_dir = os.path.join("data", "raw", "outputs", run_name)
+        os.makedirs(run_dir, exist_ok=True)
+        
+        import cv2
+        for i, view in enumerate(views):
+            v_dir = os.path.join(run_dir, f"view_{i+1}")
+            os.makedirs(v_dir, exist_ok=True)
+            
+            cv2.imwrite(os.path.join(v_dir, "rgb.png"), view["color"])
+            np.save(os.path.join(v_dir, "depth_m.npy"), view["depth"])
+            np.save(os.path.join(v_dir, "T_base_tcp.npy"), view["tcp_matrix"])
+            
+            if "tcp_pose_raw" in view:
+                np.save(os.path.join(v_dir, "tcp_pose_base.npy"), view["tcp_pose_raw"])
+            else:
+                np.save(os.path.join(v_dir, "tcp_pose_base.npy"), np.zeros(6))
+                
+        return run_dir

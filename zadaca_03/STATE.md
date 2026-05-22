@@ -7,6 +7,7 @@
 
 | Područje | Status | Napomena |
 |---|---:|---|
+| Vizijski pipeline | Optimizirano | Uveden Label-Constrained DBSCAN i optimizirani parametri. |
 | Reorganizacija repozitorija | Završeno | Uvedena je jasna podjela na `src/` i `data/`. |
 | Glavni pipeline | Završeno | Radna logika je konsolidirana u `src/02_fruit_pick_and_place`. |
 | Kalibracija | Završeno | Kalibracijske datoteke su centralizirane u `data/camera_calibration`. |

@@ -68,15 +68,41 @@ class PipelineOrchestrator:
             console.print("[bold red]Failed to start RealSense![/bold red]")
             return
             
+        home = Pose(self.planner.config.home_pose_xyz, self.planner.config.home_pose_rvec)
+        console.print("[yellow]Moving to home pose before capture...[/yellow]")
+        self.robot.move_to_pose(home, 0.5, 0.5)
+            
         try:
             for i, p_tuple in enumerate(self.vision.config.capture_poses):
                 pose = Pose(xyz=p_tuple[:3], rvec=p_tuple[3:])
                 console.print(f"[yellow]Moving to capture pose {i+1}...[/yellow]")
-                self.robot.move_to_pose(pose, velocity=0.5, acceleration=0.5)
-                time.sleep(0.5) # settle time
+                self.robot.move_to_pose(pose, velocity=0.5, acceleration=0.5, async_move=True)
                 
+                # Live prikaz dok se robot pomice
+                import cv2
+                import time
+                t0 = time.time()
+                while time.time() - t0 < 15.0:
+                    try:
+                        c_img, _ = self.vision.capture_live_view()
+                        cv2.imshow("Live View", cv2.rotate(c_img, cv2.ROTATE_180))
+                        cv2.waitKey(30)
+                    except Exception:
+                        pass
+                        
+                    if self.robot.config.use_mock:
+                        if time.time() - t0 > 0.5: break
+                    else:
+                        current = self.robot.get_tcp_pose()
+                        p_err = np.linalg.norm(np.array(current.xyz) - np.array(pose.xyz))
+                        if p_err < 0.005:
+                            time.sleep(0.3)
+                            break
+                            
                 console.print(f"[green]Capturing view {i+1}...[/green]")
                 color, depth = self.vision.capture_live_view()
+                cv2.imshow("Live View", cv2.rotate(color, cv2.ROTATE_180))
+                cv2.waitKey(500)
                 
                 actual_tcp = self.robot.get_tcp_pose()
                 from scipy.spatial.transform import Rotation as R
@@ -90,13 +116,18 @@ class PipelineOrchestrator:
                     "tcp_matrix": t_matrix
                 })
         finally:
+            import cv2
+            cv2.destroyAllWindows()
             self.vision.stop_realsense()
             home = Pose(self.planner.config.home_pose_xyz, self.planner.config.home_pose_rvec)
             self.robot.move_to_pose(home, 0.5, 0.5)
             
         with console.status("[bold green]Processing live perception data...") as status:
             t_cam_from_tcp = np.load("data/camera_calibration/T_cam_from_tcp.npy")
-            merged_pcd, objects = self.vision.process_scene_views(views, t_cam_from_tcp, strategy=2)
+            merged_pcd, objects = self.vision.process_scene_views(views, t_cam_from_tcp, strategy=5)
+            
+            run_dir = self.storage.save_run_data(views)
+            console.print(f"[bold green]Saved raw capture data to {run_dir}[/bold green]")
             
             pcd_path = self.storage.save_point_cloud("final_merged_point_cloud", merged_pcd)
             obj_path = self.storage.save_objects_data("objects_with_robot_coords", objects)
@@ -105,6 +136,24 @@ class PipelineOrchestrator:
             self.ctx.segmented_objects = objects
             
         console.print(f"[bold cyan]Live Perception Done![/bold cyan] Found {len(objects)} objects.")
+        
+        if self.ctx.merged_pcd_path:
+            import open3d as o3d
+            console.print(f"\n[bold green]Prikazujem pointcloud scene...[/bold green]")
+            console.print("[italic]Zatvorite Open3D prozor za nastavak.[/italic]")
+            try:
+                pcd = o3d.io.read_point_cloud(self.ctx.merged_pcd_path)
+                geometries = [pcd]
+                # Prikaz bounding boxeva oko nadenih objekata
+                for obj in objects:
+                    if hasattr(obj, 'pcd') and not obj.pcd.is_empty():
+                        bbox = obj.pcd.get_axis_aligned_bounding_box()
+                        bbox.color = (1, 0, 0)
+                        geometries.append(bbox)
+                o3d.visualization.draw_geometries(geometries)
+            except Exception as e:
+                console.print(f"[red]Greska pri prikazu: {e}[/red]")
+                
         self._display_objects_table(objects)
 
     def _display_objects_table(self, objects):

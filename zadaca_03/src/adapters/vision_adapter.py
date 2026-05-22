@@ -28,33 +28,70 @@ class PointCloudProcessor:
         cl, ind = p_d.remove_statistical_outlier(25, 1.5)
         return p_d.select_by_index(ind).crop(o3d.geometry.AxisAlignedBoundingBox((-1,-1,0),(1,1,1.2)))
 
-    def register_and_stitch(self, pcds: List[Tuple[o3d.geometry.PointCloud, np.ndarray]], strategy: int = 5) -> Tuple[o3d.geometry.PointCloud, List[np.ndarray]]:
+    def register_and_stitch(self, pcds: List[Tuple[o3d.geometry.PointCloud, np.ndarray]], strategy: int = 5) -> Tuple[o3d.geometry.PointCloud, List[Any]]:
         if not pcds: return o3d.geometry.PointCloud(), []
-        n_v = len(pcds); import copy
+        n_v = len(pcds); import copy, itertools
+        if n_v == 1:
+            return pcds[0][0].voxel_down_sample(0.003), [np.eye(4)]
+            
         prep = [copy.deepcopy(p[0]).transform(p[1]) for p in pcds]
         for p in prep: p.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(0.02, 30))
         
-        best_merged, best_t, best_score = None, [np.eye(4)] * n_v, -1.0
-        for voxel in [0.003, 0.005]:
-            for thresh in [0.03, 0.05, 0.08]:
-                t_curr = [np.eye(4)] * n_v; fits = []
-                target = prep[0].voxel_down_sample(voxel); target.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(0.02, 30))
-                for i in range(1, n_v):
-                    source = prep[i].voxel_down_sample(voxel)
+        best_pair = None
+        best_pair_score = -1.0
+        best_pair_T = np.eye(4)
+        best_voxel, best_thresh = 0.003, 0.03
+        
+        def calc_score(fit, rmse):
+            return fit / (rmse + 1e-6)
+        
+        for i, j in itertools.combinations(range(n_v), 2):
+            for voxel in [0.003, 0.005]:
+                for thresh in [0.03, 0.05, 0.08]:
+                    target = prep[i].voxel_down_sample(voxel); target.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(0.02, 30))
+                    source = prep[j].voxel_down_sample(voxel)
                     r1 = o3d.pipelines.registration.registration_icp(source, target, thresh, np.eye(4), o3d.pipelines.registration.TransformationEstimationPointToPlane())
                     try:
                         r2 = o3d.pipelines.registration.registration_colored_icp(source, target, thresh/2, r1.transformation, o3d.pipelines.registration.TransformationEstimationForColoredICP())
-                        t_curr[i], fit = r2.transformation, r2.fitness
-                    except: t_curr[i], fit = r1.transformation, r1.fitness
-                    fits.append(fit)
-                score = np.mean(fits) if fits else 1.0
-                if score > best_score:
-                    best_score, best_t = score, t_curr
-                    m = copy.deepcopy(prep[0])
-                    for i in range(1, n_v): m += copy.deepcopy(prep[i]).transform(t_curr[i])
-                    best_merged = m
-        print(f"  [Stitch] Best Alignment Fitness: {best_score*100:.1f}%")
-        return best_merged.voxel_down_sample(0.003), best_t
+                        fit, rmse, T = r2.fitness, r2.inlier_rmse, r2.transformation
+                    except:
+                        fit, rmse, T = r1.fitness, r1.inlier_rmse, r1.transformation
+                        
+                    score = calc_score(fit, rmse)
+                    if score > best_pair_score:
+                        best_pair_score = score
+                        best_pair_T = T
+                        best_pair = (i, j)
+                        best_voxel, best_thresh = voxel, thresh
+
+        A, B = best_pair
+        merged = copy.deepcopy(prep[A])
+        merged += copy.deepcopy(prep[B]).transform(best_pair_T)
+        
+        t_curr = [None] * n_v
+        t_curr[A] = np.eye(4)
+        t_curr[B] = best_pair_T
+        
+        rem = [k for k in range(n_v) if k not in (A, B)]
+        
+        for k in rem:
+            target = merged.voxel_down_sample(best_voxel); target.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(0.02, 30))
+            source = prep[k].voxel_down_sample(best_voxel)
+            r1 = o3d.pipelines.registration.registration_icp(source, target, best_thresh, np.eye(4), o3d.pipelines.registration.TransformationEstimationPointToPlane())
+            try:
+                r2 = o3d.pipelines.registration.registration_colored_icp(source, target, best_thresh/2, r1.transformation, o3d.pipelines.registration.TransformationEstimationForColoredICP())
+                fit, rmse, T = r2.fitness, r2.inlier_rmse, r2.transformation
+            except:
+                fit, rmse, T = r1.fitness, r1.inlier_rmse, r1.transformation
+                
+            score = calc_score(fit, rmse)
+            if score >= best_pair_score * 0.85:
+                merged += copy.deepcopy(prep[k]).transform(T)
+                t_curr[k] = T
+            else:
+                print(f"  [Stitch] Rejected view {k} (Score {score:.2f} < {best_pair_score*0.85:.2f})")
+                
+        return merged.voxel_down_sample(0.003), t_curr
 
 class VisionAdapter(IVisionAdapter):
     def __init__(self, config: VisionConfig, intrinsics: np.ndarray):
@@ -78,22 +115,32 @@ class VisionAdapter(IVisionAdapter):
         f = self.rs_pipeline.wait_for_frames(); a = self.rs_align.process(f)
         color = np.asanyarray(a.get_color_frame().get_data())
         depth = np.asanyarray(a.get_depth_frame().get_data()).astype(np.float32) * self.rs_depth_scale
-        return color[..., ::-1].copy(), depth
+        
+        # Return BGR directly (YOLO and cv2 like BGR, PointCloudProcessor converts BGR2RGB)
+        # Ne radimo rotaciju ovdje da bi sacuvali T_cam_from_tcp kalibraciju 3D prostora!
+        return color.copy(), depth
         
     def process_scene_views(self, views: List[Dict[str, Any]], t_cam_from_tcp: np.ndarray, strategy: int = 5) -> Tuple[Any, List[SegmentedObject]]:
         if not self.model: self.load_model()
         all_pcds, view_objs_all = [], []
-        for v_idx, view in enumerate(views):
+        for view in views:
             color, depth, tcp_mat = view["color"], view["depth"], view["tcp_matrix"]
-            cam_pose, intr = tcp_mat @ t_cam_from_tcp, view.get("intrinsics", self.intrinsics)
+            intr = view.get("intrinsics")
+            if intr is None:
+                intr = self.intrinsics
+            cam_pose = tcp_mat @ t_cam_from_tcp
             all_pcds.append((self.pc_processor.filter_pcd(self.pc_processor.create_pcd_from_rgbd(color, depth, intr)), cam_pose))
-            res = self.model(color, conf=0.15, verbose=False)
+            
+            # YOLO detekcija na uspravnoj slici
+            color_upright = cv2.rotate(color, cv2.ROTATE_180)
+            res = self.model(color_upright, conf=self.config.confidence_threshold, verbose=False)
             v_objs = []
             if len(res) > 0 and res[0].masks is not None:
                 m, b, n = res[0].masks.data.cpu().numpy(), res[0].boxes, res[0].names
                 for i in range(len(m)):
-                    mask = cv2.resize(m[i], (depth.shape[1], depth.shape[0]), interpolation=cv2.INTER_NEAREST) if m[i].shape != depth.shape else m[i]
-                    od = depth.copy(); od[mask == 0] = 0
+                    mask_upright = cv2.resize(m[i], (depth.shape[1], depth.shape[0]), interpolation=cv2.INTER_NEAREST) if m[i].shape != depth.shape else m[i]
+                    mask_orig = cv2.rotate(mask_upright, cv2.ROTATE_180)
+                    od = depth.copy(); od[mask_orig < 0.5] = 0
                     op = self.pc_processor.filter_pcd(self.pc_processor.create_pcd_from_rgbd(color, od, intr))
                     if len(op.points) > 10: 
                         op.transform(cam_pose)
@@ -102,42 +149,97 @@ class VisionAdapter(IVisionAdapter):
                     
         stitched_pcd, icp_t = self.pc_processor.register_and_stitch(all_pcds, strategy)
         
-        # Iterative Search for BEST SEGMENTATION
-        best_objs = []; best_score = -1.0
-        for eps in [0.015, 0.022, 0.028, 0.035]:
-            for min_pts in [10, 25]:
-                pts_l, cols_l, conf_l, lab_l = [], [], [], []
-                for i, v_objs in enumerate(view_objs_all):
-                    for name, conf, op in v_objs:
-                        op_c = copy.deepcopy(op).transform(icp_t[i])
-                        pts_l.append(np.asarray(op_c.points)); cols_l.append(np.asarray(op_c.colors))
-                        conf_l.append(np.full(len(op_c.points), conf)); lab_l.append(np.full(len(op_c.points), name, dtype=object))
+        # 1. Gather all points from all views after registration
+        pts_l, cols_l, conf_l, lab_l = [], [], [], []
+        for i, v_objs in enumerate(view_objs_all):
+            if icp_t[i] is None: continue
+            for name, conf, op in v_objs:
+                op_c = copy.deepcopy(op).transform(icp_t[i])
+                pts_l.append(np.asarray(op_c.points))
+                cols_l.append(np.asarray(op_c.colors))
+                conf_l.append(np.full(len(op_c.points), conf))
+                lab_l.append(np.full(len(op_c.points), name, dtype=object))
 
-                if not pts_l: continue
-                pts = np.concatenate(pts_l); cols = np.concatenate(cols_l); confs = np.concatenate(conf_l); labels = np.concatenate(lab_l)
-                p = o3d.geometry.PointCloud(); p.points, p.colors = o3d.utility.Vector3dVector(pts), o3d.utility.Vector3dVector(cols)
-                idx = np.array(p.cluster_dbscan(eps=eps, min_points=min_pts))
-                
-                cur = []
-                for lbl in range(idx.max() + 1):
-                    mask = (idx == lbl); cp, cl, cf = pts[mask], labels[mask], confs[mask]
-                    uc = np.unique(cl); scores = {c: np.sum(cf[cl == c]) * np.sum(cl == c) for c in uc}
-                    win = max(scores, key=scores.get)
-                    res = o3d.geometry.PointCloud(); res.points, res.colors = o3d.utility.Vector3dVector(cp), o3d.utility.Vector3dVector(cols[mask])
-                    cur.append(SegmentedObject(len(cur), win, float(np.mean(cf[cl == win])), tuple(cp.mean(axis=0)), res))
-                
-                # Ultimate Scoring:
-                # 1. Favor unique classes (most important)
-                # 2. Favor finding exactly 6 objects
-                # 3. Penalty for multiple instances of same class
-                unique_classes = set([o.class_name for o in cur])
-                diversity_score = len(unique_classes) * 20.0
-                count_score = 5.0 / (1.0 + abs(6 - len(cur)))
-                uniqueness_penalty = (len(cur) - len(unique_classes)) * 2.0
-                total_score = diversity_score + count_score - uniqueness_penalty
-                
-                if total_score > best_score:
-                    best_score, best_objs = total_score, cur
-                    print(f"  [Optimizer] eps={eps:.3f}, min_pts={min_pts} -> {len(cur)} objs ({len(unique_classes)} unique). Score: {total_score:.2f}")
+        if not pts_l:
+            return stitched_pcd, []
 
-        return stitched_pcd, best_objs
+        all_pts = np.concatenate(pts_l)
+        all_cols = np.concatenate(cols_l)
+        all_confs = np.concatenate(conf_l)
+        all_labels = np.concatenate(lab_l)
+
+        # 2. Hierarchical Clustering:
+        # 2a. First cluster per-class to isolate instances
+        candidate_objs = []
+        unique_labels = np.unique(all_labels)
+        eps = self.config.dbscan_eps
+        min_pts = self.config.dbscan_min_pts
+
+        for label in unique_labels:
+            mask = (all_labels == label)
+            l_pts, l_cols, l_confs = all_pts[mask], all_cols[mask], all_confs[mask]
+            
+            if len(l_pts) < min_pts: continue
+            
+            p_l = o3d.geometry.PointCloud()
+            p_l.points = o3d.utility.Vector3dVector(l_pts)
+            l_idx = np.array(p_l.cluster_dbscan(eps=eps, min_points=min_pts))
+            
+            for lbl in range(l_idx.max() + 1):
+                c_mask = (l_idx == lbl)
+                cp, cc, cf = l_pts[c_mask], l_cols[c_mask], l_confs[c_mask]
+                
+                res_pcd = o3d.geometry.PointCloud()
+                res_pcd.points = o3d.utility.Vector3dVector(cp)
+                res_pcd.colors = o3d.utility.Vector3dVector(cc)
+                
+                candidate_objs.append({
+                    "label": str(label),
+                    "confidence": float(np.mean(cf)),
+                    "conf_sum": float(np.sum(cf)),
+                    "centroid": cp.mean(axis=0),
+                    "pcd": res_pcd
+                })
+
+        # 2b. Spatial centroid merge (handle mis-classifications of same physical object)
+        # Strongest label (by conf_sum) wins the physical object.
+        final_objects = []
+        candidate_objs.sort(key=lambda x: x["conf_sum"], reverse=True)
+        merge_dist_thresh = 0.05 # 5cm
+
+        for cand in candidate_objs:
+            is_merged = False
+            for existing in final_objects:
+                # Merge DIFFERENT classes if they are physically at the same spot
+                if cand["label"] != existing.class_name:
+                    dist = np.linalg.norm(cand["centroid"] - np.array(existing.centroid_robot_base))
+                    if dist < merge_dist_thresh:
+                        is_merged = True
+                        break
+            if not is_merged:
+                obj = SegmentedObject(
+                    instance_id=len(final_objects),
+                    class_name=cand["label"],
+                    confidence=cand["confidence"],
+                    centroid_robot_base=tuple(cand["centroid"]),
+                    pcd=cand["pcd"]
+                )
+                final_objects.append(obj)
+                
+        import colorsys
+        for obj in final_objects:
+            if obj.class_name in ["Naranca", "Crvena Jabuka"]:
+                colors = np.asarray(obj.pcd.colors)
+                if len(colors) > 0:
+                    mean_rgb = np.mean(colors, axis=0)
+                    h, s, v = colorsys.rgb_to_hsv(mean_rgb[0], mean_rgb[1], mean_rgb[2])
+                    hue_deg = h * 360
+                    # Red hue is around 0-15 and 345-360, Orange is 15-45
+                    if hue_deg < 16 or hue_deg > 340:
+                        obj.class_name = "Crvena Jabuka"
+                    else:
+                        obj.class_name = "Naranca"
+
+        print(f"  [VisionAdapter] Hierarchical Perception: Found {len(candidate_objs)} raw clusters, merged into {len(final_objects)} unique objects.")
+        return stitched_pcd, final_objects
+
