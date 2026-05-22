@@ -29,7 +29,7 @@ class PlanningUseCase:
                                  place_loc: Optional[Tuple[float,float,float]] = None) -> PickPlacePoses:
         home = Pose(self.config.home_pose_xyz, self.config.home_pose_rvec)
         
-        pick_z = target.centroid_robot_base[2] + 0.015 # Add gripping offset
+        pick_z = target.centroid_robot_base[2] + getattr(self.config, 'grasp_offset_z', -0.02)
         pick_pose = Pose(
             (target.centroid_robot_base[0], target.centroid_robot_base[1], pick_z),
             self.config.home_pose_rvec
@@ -114,3 +114,21 @@ class PlanningUseCase:
             points=all_points,
             total_duration=current_time
         )
+        
+    def plan_trajectory_segments(self, poses: PickPlacePoses) -> List[TrajectoryPlan]:
+        segments = [
+            (poses.home, poses.approach_pick, 2.5),
+            (poses.approach_pick, poses.pick, 1.5),
+            (poses.pick, poses.approach_pick, 1.5),
+            (poses.approach_pick, poses.approach_place, 2.5),
+            (poses.approach_place, poses.place, 1.5),
+            (poses.place, poses.approach_place, 1.5),
+            (poses.approach_place, poses.home, 2.0)
+        ]
+        
+        plans = []
+        for start, end, dur in segments:
+            pts = self._create_segment(start, end, dur, 0.0)
+            plans.append(TrajectoryPlan(points=pts, total_duration=dur))
+            
+        return plans

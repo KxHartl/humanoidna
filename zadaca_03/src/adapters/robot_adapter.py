@@ -120,6 +120,81 @@ class RobotAdapter(IRobotAdapter):
         time.sleep(trajectory.total_duration + 0.5)
         return True
         
+    def execute_pick_place_segments(self, segments: List[TrajectoryPlan]) -> bool:
+        if not self.connected:
+            return False
+            
+        total_duration = sum(seg.total_duration for seg in segments)
+        
+        if self.config.use_mock:
+            time.sleep(total_duration + 2.0)
+            return True
+            
+        lines = ["def pick_place_prog():"]
+        pulse_s = 0.5
+        lookahead = 0.1
+        gain = 300
+        
+        def add_segment(traj, skip_first=False):
+            if len(traj.points) < 2:
+                return
+            dt = traj.points[1].time - traj.points[0].time
+            points = traj.points[1:] if skip_first else traj.points
+            for pt in points:
+                pose_str = f"p[{pt.positions[0]:.6f}, {pt.positions[1]:.6f}, {pt.positions[2]:.6f}, {pt.positions[3]:.6f}, {pt.positions[4]:.6f}, {pt.positions[5]:.6f}]"
+                lines.append(f"  servoj(get_inverse_kin({pose_str}), t={dt:.6f}, lookahead_time={lookahead:.3f}, gain={gain})")
+
+        def add_gripper(close):
+            lines.append("  sleep(0.050)")
+            if close:
+                lines.extend([
+                    "  set_standard_digital_out(5, False)",
+                    "  set_standard_digital_out(4, True)",
+                    f"  sleep({pulse_s:.3f})",
+                    "  set_standard_digital_out(4, False)",
+                    "  set_standard_digital_out(5, False)"
+                ])
+            else:
+                lines.extend([
+                    "  set_standard_digital_out(4, False)",
+                    "  set_standard_digital_out(5, True)",
+                    f"  sleep({pulse_s:.3f})",
+                    "  set_standard_digital_out(4, False)",
+                    "  set_standard_digital_out(5, False)"
+                ])
+            lines.append("  sleep(0.050)")
+
+        # 1. move to approach_pick
+        add_segment(segments[0], skip_first=False)
+        # 2. open gripper
+        add_gripper(close=False)
+        # 3. move to pick
+        add_segment(segments[1], skip_first=True)
+        # 4. close gripper
+        add_gripper(close=True)
+        # 5. move to approach_pick
+        add_segment(segments[2], skip_first=True)
+        # 6. move to approach_place
+        add_segment(segments[3], skip_first=True)
+        # 7. move to place
+        add_segment(segments[4], skip_first=True)
+        # 8. open gripper
+        add_gripper(close=False)
+        # 9. move to approach_place
+        add_segment(segments[5], skip_first=True)
+        # 10. move to home
+        add_segment(segments[6], skip_first=True)
+        
+        lines.append("end")
+        lines.append("pick_place_prog()\n")
+        
+        program = "\n".join(lines)
+        self._send_urscript(program)
+        
+        # wait is trajectory duration + 4 * gripper buffers (0.1s) + 2 * pulse_s + buffer
+        time.sleep(total_duration + 3.0)
+        return True
+        
     def set_gripper(self, close: bool) -> None:
         if self.config.use_mock:
             time.sleep(0.2)

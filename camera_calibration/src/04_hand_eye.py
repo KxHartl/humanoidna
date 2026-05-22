@@ -8,8 +8,8 @@ from natsort import natsorted
 IMAGES_GLOB = "data/calibration_images/*.png"
 ROBOT_FILE = "data/calibration_images/robot_positions.txt"
 
-SQUARE_LENGTH = 0.0348   # m
-MARKER_LENGTH = 0.0173   # m
+SQUARE_LENGTH = 0.0291   # m
+MARKER_LENGTH = 0.0146   # m
 MIN_CHARUCO_CORNERS = 6
 
 # Helper functions for matrix operations and pose detection

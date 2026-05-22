@@ -1,0 +1,262 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[croatian]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathptmx}       % Times New Roman font
+\usepackage{chngcntr}       % Za numeriranje po poglavljima
+\usepackage[hidelinks]{hyperref}       % Za URL linkove bez ružnih okvira
+
+% Postavke margina
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+% Prored 1.5
+\onehalfspacing
+
+% ---- STILOVI NASLOVA ----
+\titleformat{\section}
+  {\normalfont\large\bfseries\uppercase}{\thesection.}{0.5em}{}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\itshape}{\thesubsubsection.}{0.5em}{}
+\titleformat{\paragraph}[hang]
+  {\normalfont\normalsize\itshape}{\theparagraph.}{0.5em}{}
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{0.5em}
+
+% Svaki \section počinje na novoj stranici
+\newcommand{\sectionbreak}{\clearpage}
+
+% ---- NUMERIRANJE SLIKA, TABLICA I JEDNADŽBI PO POGLAVLJIMA ----
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\counterwithin{equation}{section}
+
+% Dubina numeriranja (do 4 razine)
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+% ---- NAZIVI AUTOMATSKIH POPISA ----
+\addto\captionscroatian{%
+  \renewcommand{\contentsname}{SADRŽAJ}%
+  \renewcommand{\listfigurename}{POPIS SLIKA}%
+  \renewcommand{\listtablename}{POPIS TABLICA}%
+  \renewcommand{\refname}{LITERATURA}%
+}
+
+% ---- POTPISI SLIKA I TABLICA ----
+\captionsetup[figure]{font={small,bf},labelsep=period}
+\captionsetup[table]{font={small,bf},labelsep=period,position=above}
+
+% ---- ZAGLAVLJE I PODNOŽJE ----
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Krešimir Hartl}}
+\fancyhead[R]{\small\textit{Zadatak pick-and-place voća}}
+\fancyfoot[L]{\small\textit{Fakultet strojarstva i brodogradnje}}
+\fancyfoot[R]{\small\textit{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+% =====================================================================
+% NASLOVNICA
+% =====================================================================
+\begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    {\fontsize{16pt}{19pt}\selectfont SVEUČILIŠTE U ZAGREBU\\}
+    {\fontsize{16pt}{19pt}\selectfont FAKULTET STROJARSTVA I BRODOGRADNJE\\}
+    \vfill
+    {\fontsize{28pt}{34pt}\selectfont\bfseries HUMANOIDNI ROBOTI I BIOMIMETIČKI SUSTAVI\\}
+    \vspace{0.5cm}
+    {\fontsize{28pt}{34pt}\selectfont\bfseries ZADATAK PICK-AND-PLACE VOĆA\\}
+    \vfill
+    \noindent
+    \begin{minipage}[t]{0.48\textwidth}
+        \raggedright
+        {\fontsize{14pt}{17pt}\selectfont \ \\}
+        {\fontsize{14pt}{17pt}\selectfont \ \\}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \raggedleft
+        {\fontsize{14pt}{17pt}\selectfont\bfseries Krešimir Hartl\\}
+    \end{minipage}
+    \vspace{1cm}
+    \begin{center}
+        {\fontsize{14pt}{17pt}\selectfont Zagreb, 2026.}
+    \end{center}
+\end{titlepage}
+
+% =====================================================================
+% SADRŽAJ I POPISI (rimske stranice)
+% =====================================================================
+\pagenumbering{Roman}
+
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+
+% =====================================================================
+% SADRŽAJ RADA (arapske stranice)
+% =====================================================================
+\pagenumbering{arabic}
+
+\section{ARHITEKTURA SUSTAVA}
+Arhitektura programskog rješenja izvedena je po načelima objektno-orijentiranog programiranja s jasnim razdvajanjem dužnosti kroz \textit{adapter} uzorke dizajna. Sustav se sastoji od sljedećih ključnih modula:
+\begin{itemize}
+    \item \textbf{VisionAdapter}: Zadužen za sučeljavanje s RGB-D kamerom (ili offline spremljenim podacima), izvršavanje YOLO detekcije, izradu Point Cloudova i upravljanje modelima prepoznavanja voća.
+    \item \textbf{PointCloudProcessor}: Domenski modul unutar vizualnog adaptera koji se bavi isključivo prostornom geometrijom (filtriranje $Z$-osi, uklanjanje šuma, DBSCAN klasteriranje, te ICP registracija za spajanje više pogleda).
+    \item \textbf{RobotAdapter}: Služi kao komunikacijski most prema UR robotu putem RTDE sučelja. Obavlja micanje robota (J i L gibanja), primjenu \textit{task-space} putanja i slanje digitalnih signala za pneumatsku hvataljku (DO 4 za otvaranje, DO 5 za zatvaranje, 0.5s trajanje pulsa).
+    \item \textbf{PlanningUseCase}: Modul u kojem se implementira logika rješavanja problema. Izračunava kvintičku interpolaciju (polinomi petog stupnja) između zadanih pozicija (Home, Approach, Pick, Approach Place, Place) vodeći računa o maksimalnim brzinama i ubrzanjima.
+    \item \textbf{PipelineOrchestrator}: Centralni orkestrator koji povezuje gornje module te osigurava pravilan redoslijed izvršavanja, upravlja spremanjem međurezultata i prelaskom iz stanja \textit{Perception} u \textit{Planning} i \textit{Execution}.
+\end{itemize}
+
+\section{KALIBRACIJA SUSTAVA}
+Hand-Eye kalibracija i dobivanje unutarnjih parametara kamere (intrinzična kalibracija) odrađeni su sljedećim postupkom:
+\begin{itemize}
+    \item \textbf{Kalibracijski uzorak}: Korišten je ChArUco plakat dimenzija $5 \times 7$. Parametri u kodu sustava za detekciju točaka postavljeni su na \texttt{board = cv2.aruco.CharucoBoard((5, 7), 0.0291, 0.0146, aruco\_dict)}, što definira da je duljina polja $29.1$ mm, a duljina markera $14.6$ mm.
+    \item \textbf{Prikupljanje podataka}: Sustav je obradio 26 RGB slika iz različitih statičnih poza robota kako bi se dobila visoka varijansa kuteva i translacija u radnom prostoru.
+    \item \textbf{Metoda rješavanja}: Homogena matrica transformacije između baze kamere i baze robota izračunata je korištenjem robusne \texttt{cv2.calibrateHandEye} metode.
+\end{itemize}
+
+Konačna kalibracijska matrica $T_{\text{cam\_from\_tcp}}$ (kamera u odnosu na TCP) koja se koristi u sustavu dana je ispod:
+\begin{equation}
+T_{\text{cam\_from\_tcp}} = \begin{bmatrix}
+-0.38711 & -0.84345 & -0.37245 & 0.12537 \\
+ 0.92193 & -0.34825 & -0.16955 & 0.02687 \\
+ 0.01330 & -0.40902 &  0.91242 & -0.11331 \\
+ 0.00000 &  0.00000 &  0.00000 & 1.00000
+\end{bmatrix}
+\end{equation}
+
+\section{OBRADA POINT CLOUD PODATAKA}
+Za svaki od tri pogleda (s različitih stajališta robota), generiran je oblak točaka korištenjem dubinske slike, RGB slike te kamernih intrinzičnih parametara (fokalne duljine i optički centar). Nakon generiranja sirovog Point Clouda, odrađeni su sljedeći koraci:
+\begin{enumerate}
+    \item \textbf{Filtriranje po Z osi}: Odbačene su točke izvan radnog područja stola (kako bi se eliminirali pod, strop i zidovi).
+    \item \textbf{Statističko filtriranje šuma}: Korišten je algoritam za odbacivanje točaka koje su prosječno previše udaljene od svojih $k=20$ najbližih susjeda s devijacijom $std\_ratio=2.0$. Time su smanjene refleksije i šum s rubova objekata.
+    \item \textbf{Segmentacija}: Koristeći 2D maske dobivene preko YOLO modela (s pragom $conf=0.75$), 3D točke unutar maske su izdvojene, a zatim provučene kroz 3D DBSCAN ($eps=0.03$, $min\_points=50$). S obzirom na to da se nekada maska prelijeva izvan ruba jabuke, DBSCAN klasteriranjem uspješno odbacujemo pozadinske točke.
+    \item \textbf{Registracija (spajanje)}: Svaki parcijalni oblak je pomoću matrice $T_{\text{base\_tcp}} \cdot T_{\text{cam\_from\_tcp}}$ transformiran u globalni koordinatni sustav baze robota. Zbog blagih netočnosti dubinskog senzora kod snimanja pod kutem, na svaki novododani preklapajući oblak primijenjena je ICP (Iterative Closest Point) registracija uz prag do $20$ mm kako bi se voće iz različitih kutova savršeno "stopilo" u jednu cjelinu.
+\end{enumerate}
+
+Na slikama u prilogu vidljivi su koraci obrade za jedan od pogleda, te konačni rezultat spajanja sva 3 pogleda za dva različita prolaza robota (run\_1 i run\_2).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.48\textwidth]{assets/run_1/step_01_view_1_original.png}
+    \hfill
+    \includegraphics[width=0.48\textwidth]{assets/run_1/step_02_view_1_filtered.png}
+    \caption{RUN 1: Originalni oblak točaka (lijevo) i profiltrirani oblak (desno).}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.48\textwidth]{assets/run_1/step_03_view_1_segmented.png}
+    \hfill
+    \includegraphics[width=0.48\textwidth]{assets/run_1/step_10_final_merged.png}
+    \caption{RUN 1: Segmentirani oblaci za jedan pogled (lijevo) te konačni registrirani globalni oblak nakon ICP-a (desno).}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.48\textwidth]{assets/run_2/step_01_view_1_original.png}
+    \hfill
+    \includegraphics[width=0.48\textwidth]{assets/run_2/step_02_view_1_filtered.png}
+    \caption{RUN 2: Originalni oblak točaka (lijevo) i profiltrirani oblak (desno).}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.48\textwidth]{assets/run_2/step_03_view_1_segmented.png}
+    \hfill
+    \includegraphics[width=0.48\textwidth]{assets/run_2/step_10_final_merged.png}
+    \caption{RUN 2: Segmentirani oblaci za jedan pogled (lijevo) te konačni registrirani globalni oblak nakon ICP-a (desno).}
+\end{figure}
+
+\section{DETEKCIJA OBJEKATA}
+Segmentacija se vrši nad RGB slikom (1280x720) pomoću treniranog YOLO (You Only Look Once) konvolucijskog modela specijaliziranog za maske objekata, uz parametar \texttt{confidence\_threshold = 0.75}. Kroz YOLO detekciju, osim bounding-boxa, dobiva se poligonalna maska. Ta se maska translatira nad dubinsku sliku kako bi se isjekao pripadajući dio Point Clouda.
+
+Da bi se precizno locirao centar voća za zadatak podizanja (\textit{picking}), provodi se postupak:
+1. Filtriranje točaka izvan 2D maske.
+2. Grupiranje DBSCAN metodom radi odbacivanja krivo klasificiranih rubnih točaka i prljavštine sa stola (najveći klaster proglašava se validnim voćem).
+3. Računanje 3D prosjeka koordinata svih preostalih točaka klastera (centroid).
+4. Budući da centroid leži blizu geometrijskog središta voća, točka zahvata pomaknuta je u minus smjeru Z osi (iz perspektive TCP-a, tj. gore) za ugrađeni $Z\_offset=-0.02$ m (20 mm) kako hvataljka ne bi udarila o vrh voća.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.48\textwidth]{assets/run_1/step_11_final_classification.png}
+    \hfill
+    \includegraphics[width=0.48\textwidth]{assets/run_2/step_11_final_classification.png}
+    \caption{Vizualizacija detekcije objekata s pridruženim bounding-box okvirom (lijevo: RUN 1, desno: RUN 2).}
+\end{figure}
+
+\section{GENERIRANJE I ANALIZA TRAJEKTORIJE}
+Trajektorija kretanja od početne pozicije pa sve do ciljnog kontejnera za odlaganje računa se na razini *task-spacea*. Za interpolaciju između kontrolnih točaka (Home $\to$ Approach $\to$ Pick $\to$ Approach Place $\to$ Place) koristi se \textbf{kvintički polinom} (polinom 5. stupnja), čime se osigurava neprekidnost funkcije puta, brzine te ubrzanja ($C^2$ glatkoća).
+
+Vremena pojedinih faza ($T_1, T_2, \dots$) ovise o euklidskoj udaljenosti i zadanim maksimalnim kinematičkim ograničenjima robota (vmax = $0.25$ m/s, amax = $0.5$ m/s$^2$). Prilikom generiranja trajektorija obavlja se \textbf{diskretizacija} izračunatih funkcija s frekvencijom od 20 Hz, odnosno vremenskim korakom $dt = 0.05$ s. Na ovaj način robot neprekidno prima niz uzastopnih pozicija i brzina te linearno i ravnomjerno komunicira s kontrolerom.
+
+Slika 5 prikazuje grafove pozicije, brzine i ubrzanja u vremenu za prvu međutrajektoriju (od $home0$ do $iznad\_pick1$). Slika 6 donosi vizualizaciju izvedive 3D putanje s istaknutih 5 glavnih TCP poza: $home0$, $iznad\_pick1$, $pick2$, $iznad\_place3$, $place4$. U Tablici 1 prikazana je kvantitativna analiza jedne cjelovite trajektorije s vremenima izvođenja pojedinih međutrajektorija (ukupno 13.0 s). Kako bi se prikazao proces diskretizacije u potpunosti, sve generirane točke unutar ovog ciklusa izlistane su u Dodatku B na kraju dokumenta.
+
+\begin{table}[h]
+    \centering
+    \caption{Generirane točke i vremena međutrajektorija za ciklus prijenosa voća.}
+    \begin{tabular}{|l|c|c|c|c|c|}
+        \hline
+        \textbf{Poza (Waypoint)} & \textbf{Vrijeme $t$ [s]} & \textbf{$\Delta t$ [s]} & \textbf{$X$ [m]} & \textbf{$Y$ [m]} & \textbf{$Z$ [m]} \\
+        \hline
+        P1: Home & 0.0 & - & -0.5437 & 0.0935 & 0.1911 \\
+        P2: Approach (Pick) & 2.5 & 2.5 & -0.5991 & 0.2271 & 0.1239 \\
+        P3: Pick & 4.0 & 1.5 & -0.5991 & 0.2271 & 0.0239 \\
+        P4: Retreat (Pick) & 5.5 & 1.5 & -0.5991 & 0.2271 & 0.1239 \\
+        P5: Approach (Place) & 8.0 & 2.5 & -0.5466 & 0.2865 & 0.1122 \\
+        P6: Place & 9.5 & 1.5 & -0.5466 & 0.2865 & 0.0122 \\
+        P7: Retreat (Place) & 11.0 & 1.5 & -0.5466 & 0.2865 & 0.1122 \\
+        P8: Home & 13.0 & 2.0 & -0.5437 & 0.0935 & 0.1911 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/trajectory_kinematics.png}
+    \caption{Kinematička analiza $x_t$, $\dot{x}_t$ i $\ddot{x}_t$ prve međutrajektorije ($home0 \to iznad\_pick1$) - kvintička interpolacija osigurava glatko pokretanje (brzina i ubrzanje na rubovima segmenta jednaki su nuli).}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/trajectory_3d_path.png}
+    \caption{3D prikaz putanje centralne točke (TCP) sa svih međutrajektorijama i 5 istaknutih TCP poza za zahvat i odlaganje.}
+\end{figure}
+
+\newpage
+\section*{DODATAK A: GITHUB REPOZITORIJ}
+\addcontentsline{toc}{section}{DODATAK A: GITHUB REPOZITORIJ}
+
+Cjelokupni izvorni kod razvijenog rješenja dostupan je na javnom GitHub repozitoriju na sljedećoj poveznici:
+
+\begin{center}
+    \url{https://github.com/KxHartl/humanoidna/tree/main/zadaca_03}
+\end{center}
+
+\newpage
+\section*{DODATAK B: DISKRETIZIRANA TRAJEKTORIJA}
+\addcontentsline{toc}{section}{DODATAK B: DISKRETIZIRANA TRAJEKTORIJA}
+
+U tablici u nastavku navedene su koordinate svih 261 izračunatih točaka koje sačinjavaju cjelovitu trajektoriju prikaza u Slici 6, diskretiziranih s vremenskim korakom $dt = 0.05$ s.
+
+\input{assets/trajectory_table.tex}
+
+\end{document}

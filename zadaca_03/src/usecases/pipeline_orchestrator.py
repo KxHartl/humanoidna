@@ -6,6 +6,7 @@ from typing import List, Optional
 from core.models import PipelineContext, PipelineState
 from core.interfaces import IRobotAdapter, IVisionAdapter, IStorageAdapter
 from usecases.planning_usecase import PlanningUseCase
+from core.config import AppConfig
 
 console = Console()
 
@@ -21,11 +22,16 @@ class PipelineOrchestrator:
         self.vision = vision
         self.storage = storage
         self.planner = planner
+        self.config = AppConfig()
         
     def run_perception_offline(self, capture_dir: str, strategy: int = 2, calib_tweak: int = 0):
         self.ctx.transition(PipelineState.PERCEPTION)
         with console.status("[bold green]Loading offline data and processing perception...") as status:
-            t_cam_from_tcp = np.load("data/camera_calibration/T_cam_from_tcp.npy")
+            t_cam_from_tcp = np.load(self.config.calibration.t_cam_from_tcp_path)
+            
+            # Apply recovered manual calibration offset (from older setup)
+            offset = self.config.calibration.tcp_cam_translation_offset
+            t_cam_from_tcp[:3, 3] += np.array(offset)
             
             if calib_tweak == 1:
                 t_cam_from_tcp = np.linalg.inv(t_cam_from_tcp)
@@ -123,7 +129,12 @@ class PipelineOrchestrator:
             self.robot.move_to_pose(home, 0.5, 0.5)
             
         with console.status("[bold green]Processing live perception data...") as status:
-            t_cam_from_tcp = np.load("data/camera_calibration/T_cam_from_tcp.npy")
+            t_cam_from_tcp = np.load(self.config.calibration.t_cam_from_tcp_path)
+            
+            # Apply recovered manual calibration offset
+            offset = self.config.calibration.tcp_cam_translation_offset
+            t_cam_from_tcp[:3, 3] += np.array(offset)
+            
             merged_pcd, objects = self.vision.process_scene_views(views, t_cam_from_tcp, strategy=5)
             
             run_dir = self.storage.save_run_data(views)
@@ -143,14 +154,46 @@ class PipelineOrchestrator:
             console.print("[italic]Zatvorite Open3D prozor za nastavak.[/italic]")
             try:
                 pcd = o3d.io.read_point_cloud(self.ctx.merged_pcd_path)
-                geometries = [pcd]
-                # Prikaz bounding boxeva oko nadenih objekata
+                import open3d.visualization.gui as gui
+                import open3d.visualization.rendering as rendering
+                
+                app = gui.Application.instance
+                app.initialize()
+                window = app.create_window("Segmentirano Voće - LIVE", 1280, 720)
+                widget3d = gui.SceneWidget()
+                widget3d.scene = rendering.Open3DScene(window.renderer)
+                window.add_child(widget3d)
+                
+                mat = rendering.MaterialRecord()
+                mat.shader = "defaultUnlit"
+                mat.point_size = 3.0
+                widget3d.scene.add_geometry("scene", pcd, mat)
+                
                 for obj in objects:
                     if hasattr(obj, 'pcd') and not obj.pcd.is_empty():
-                        bbox = obj.pcd.get_axis_aligned_bounding_box()
-                        bbox.color = (1, 0, 0)
-                        geometries.append(bbox)
-                o3d.visualization.draw_geometries(geometries)
+                        bbox_fruit = obj.pcd.get_oriented_bounding_box()
+                        bbox_fruit.color = [1, 0, 0]
+                        
+                        b_mat = rendering.MaterialRecord()
+                        b_mat.shader = "unlitLine"
+                        b_mat.line_width = 3.0
+                        widget3d.scene.add_geometry(f"bbox_{obj.instance_id}", bbox_fruit, b_mat)
+
+                        sphere = o3d.geometry.TriangleMesh.create_sphere(radius=0.01)
+                        sphere.paint_uniform_color([1, 0, 0])
+                        sphere.translate(obj.centroid_robot_base)
+                        sphere.compute_vertex_normals()
+                        
+                        s_mat = rendering.MaterialRecord()
+                        s_mat.shader = "defaultLit"
+                        widget3d.scene.add_geometry(f"centroid_{obj.instance_id}", sphere, s_mat)
+                        
+                        label_text = f"[{obj.instance_id}] {obj.class_name}"
+                        widget3d.add_3d_label(obj.centroid_robot_base, label_text)
+                        
+                bbox = pcd.get_axis_aligned_bounding_box()
+                widget3d.setup_camera(60, bbox, [-0.5, 0.15, 0.07])
+                app.run()
             except Exception as e:
                 console.print(f"[red]Greska pri prikazu: {e}[/red]")
                 
@@ -197,13 +240,16 @@ class PipelineOrchestrator:
         console.print("[bold yellow]Starting Robot Execution...[/bold yellow]")
         
         poses = self.ctx.pick_place_poses
+        segments = self.planner.plan_trajectory_segments(poses)
         
         self.robot.connect()
+        
+        # move to home pose first (with async_move=False, it waits for robot to finish)
         self.robot.move_to_pose(poses.home, 0.5, 0.5)
         
-        self.robot.set_gripper(close=False)
-        self.robot.execute_trajectory(self.ctx.trajectory)
-        self.robot.move_to_pose(poses.home, 0.5, 0.5)
+        # execute entire pick-and-place sequence as a single URScript program
+        self.robot.execute_pick_place_segments(segments)
+        
         self.robot.disconnect()
         
         self.ctx.transition(PipelineState.IDLE)

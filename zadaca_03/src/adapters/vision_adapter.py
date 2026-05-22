@@ -129,6 +129,10 @@ class VisionAdapter(IVisionAdapter):
             if intr is None:
                 intr = self.intrinsics
             cam_pose = tcp_mat @ t_cam_from_tcp
+            if hasattr(self.config, 'z_offset_correction'):
+                z_corr = np.eye(4)
+                z_corr[2, 3] = self.config.z_offset_correction
+                cam_pose = z_corr @ cam_pose
             all_pcds.append((self.pc_processor.filter_pcd(self.pc_processor.create_pcd_from_rgbd(color, depth, intr)), cam_pose))
             
             # YOLO detekcija na uspravnoj slici

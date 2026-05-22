@@ -10,7 +10,7 @@ dist = np.load("dist_coeffs.npy")
 
 # Define ChArUco board with real dimensions
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-board = cv2.aruco.CharucoBoard((5, 7), 0.0348, 0.0173, aruco_dict) #34.8mm 17.3mm  0.029, 0.015
+board = cv2.aruco.CharucoBoard((5, 7), 0.0291, 0.0146, aruco_dict) #34.8mm 17.3mm  0.029, 0.015
 charuco_params = cv2.aruco.CharucoParameters()
 
 # Minimum number of detected ChArUco corners for reliable pose estimation

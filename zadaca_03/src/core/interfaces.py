@@ -24,6 +24,10 @@ class IRobotAdapter(ABC):
         pass
 
     @abstractmethod
+    def execute_pick_place_segments(self, segments: List[TrajectoryPlan]) -> bool:
+        pass
+
+    @abstractmethod
     def set_gripper(self, close: bool) -> None:
         pass
 

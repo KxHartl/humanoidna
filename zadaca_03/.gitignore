@@ -2,6 +2,7 @@
 .DS_Store
 Thumbs.db
 .idea/
+.vscode/
 .vscode/*.log
 
 # Python
@@ -23,6 +24,9 @@ __pycache__/
 *.snm
 *.vrb
 *.mp4
+
+# Submission bundle
+for_submission/
 
 # RAG vector store (auto-generated, large)
 data/rag/vector_store/

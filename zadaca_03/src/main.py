@@ -56,7 +56,6 @@ def main(
         console.print("\n[magenta]=======================================================[/magenta]")
         console.print("[magenta]  KALIBRACIJA: 0: Original | ICP STRATEGIJA: 5: Smart Fitness Rejection  [/magenta]")
         console.print("[magenta]=======================================================[/magenta]")
-        
         try:
             orchestrator.run_perception_offline(existing_captures, calib_tweak=0, strategy=5)
             pcd_path = orchestrator.ctx.merged_pcd_path
