@@ -21,7 +21,7 @@ def train_custom_yolo():
         data=str(data_yaml.absolute()),
         epochs=100,  # Increased for better accuracy
         imgsz=640,
-        batch=16,new
+        batch=16,
         device='0',  # Force GPU usage
         name="fruit_seg_train",
         exist_ok=True
