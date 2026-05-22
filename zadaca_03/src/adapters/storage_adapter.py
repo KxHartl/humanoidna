@@ -130,6 +130,8 @@ class StorageAdapter(IStorageAdapter):
     def load_views_for_offline(self, capture_dir: str) -> List[Dict[str, Any]]:
         views = []
         p = Path(capture_dir)
+        if (p / "captures").exists() and (p / "captures").is_dir():
+            p = p / "captures"
         pos_dirs = sorted([d for d in p.iterdir() if d.is_dir() and "view" in d.name])
         for pdir in pos_dirs:
             color_path = pdir / "rgb.png"

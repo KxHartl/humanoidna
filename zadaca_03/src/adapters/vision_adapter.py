@@ -145,6 +145,7 @@ class VisionAdapter(IVisionAdapter):
                     if len(op.points) > 10: 
                         op.transform(cam_pose)
                         v_objs.append((n[int(b.cls[i])], float(b.conf[i]), op))
+            print(f"[DEBUG] View has {len(v_objs)} YOLO objects.")
             view_objs_all.append(v_objs)
                     
         stitched_pcd, icp_t = self.pc_processor.register_and_stitch(all_pcds, strategy)
@@ -161,8 +162,10 @@ class VisionAdapter(IVisionAdapter):
                 lab_l.append(np.full(len(op_c.points), name, dtype=object))
 
         if not pts_l:
+            print("[DEBUG] pts_l is empty! No points were gathered from view_objs_all.")
             return stitched_pcd, []
-
+            
+        print(f"[DEBUG] Gathered {len(pts_l)} point clouds from views.")
         all_pts = np.concatenate(pts_l)
         all_cols = np.concatenate(cols_l)
         all_confs = np.concatenate(conf_l)
@@ -172,7 +175,7 @@ class VisionAdapter(IVisionAdapter):
         # 2a. First cluster per-class to isolate instances
         candidate_objs = []
         unique_labels = np.unique(all_labels)
-        eps = self.config.dbscan_eps
+        eps = 0.02 # much tighter to avoid merging adjacent fruits
         min_pts = self.config.dbscan_min_pts
 
         for label in unique_labels:
@@ -207,6 +210,12 @@ class VisionAdapter(IVisionAdapter):
         candidate_objs.sort(key=lambda x: x["conf_sum"], reverse=True)
         merge_dist_thresh = 0.05 # 5cm
 
+        print("\n--- Raw Candidate Objects ---")
+        for i, cand in enumerate(candidate_objs):
+            bbox = cand["pcd"].get_axis_aligned_bounding_box()
+            extent = bbox.get_max_bound() - bbox.get_min_bound()
+            print(f"Cand {i}: {cand['label']} at {cand['centroid']}, extent {extent}")
+
         for cand in candidate_objs:
             is_merged = False
             for existing in final_objects:
@@ -215,17 +224,51 @@ class VisionAdapter(IVisionAdapter):
                     dist = np.linalg.norm(cand["centroid"] - np.array(existing.centroid_robot_base))
                     if dist < merge_dist_thresh:
                         is_merged = True
+                        
+                        # Combine point clouds for a more robust, symmetric centroid
+                        existing.pcd += cand["pcd"]
+                        pts = np.asarray(existing.pcd.points)
+                        # Use median instead of mean to ignore long noisy tails (e.g. YOLO mask bleeding)
+                        existing.centroid_robot_base = tuple(np.median(pts, axis=0))
+                        
                         break
             if not is_merged:
+                # Recalculate original cand centroid with median for consistency and robustness
+                pts = np.asarray(cand["pcd"].points)
+                robust_centroid = tuple(np.median(pts, axis=0))
+                
                 obj = SegmentedObject(
                     instance_id=len(final_objects),
                     class_name=cand["label"],
                     confidence=cand["confidence"],
-                    centroid_robot_base=tuple(cand["centroid"]),
+                    centroid_robot_base=robust_centroid,
                     pcd=cand["pcd"]
                 )
                 final_objects.append(obj)
                 
+        # 2c. Final cleanup: Isolate the dense core of each object to remove YOLO mask bleeding
+        for existing in final_objects:
+            pts = np.asarray(existing.pcd.points)
+            if len(pts) > 30:
+                labels = np.array(existing.pcd.cluster_dbscan(eps=0.02, min_points=10, print_progress=False))
+                if len(labels) > 0 and labels.max() >= 0:
+                    unique_labels = np.unique(labels[labels >= 0])
+                    best_lbl = -1
+                    min_dist = 9999
+                    for lbl in unique_labels:
+                        cluster_mask = (labels == lbl)
+                        cluster_center = np.mean(pts[cluster_mask], axis=0)
+                        dist = np.linalg.norm(cluster_center - np.array(existing.centroid_robot_base))
+                        if dist < min_dist:
+                            min_dist = dist
+                            best_lbl = lbl
+                    if best_lbl != -1:
+                        final_mask = (labels == best_lbl)
+                        existing.pcd = existing.pcd.select_by_index(np.where(final_mask)[0])
+                        # Ažuriraj centroid nakon što je rep obrisan!
+                        cleaned_pts = np.asarray(existing.pcd.points)
+                        existing.centroid_robot_base = tuple(np.median(cleaned_pts, axis=0))
+                        
         import colorsys
         for obj in final_objects:
             if obj.class_name in ["Naranca", "Crvena Jabuka"]:
