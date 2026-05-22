@@ -28,6 +28,9 @@ __pycache__/
 data/rag/vector_store/
 data/rag/parsed/
 
+# Dataset subfolders
+data/datasets/*/
+
 # Environment / secrets
 .env
 .env.*
